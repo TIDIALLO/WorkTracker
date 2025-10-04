@@ -1,0 +1,11 @@
+E:\Adama loum\PFF\WorkTrack.Domain\bin\Debug\net8.0\WorkTrack.Domain.deps.json
+E:\Adama loum\PFF\WorkTrack.Domain\bin\Debug\net8.0\WorkTrack.Domain.dll
+E:\Adama loum\PFF\WorkTrack.Domain\bin\Debug\net8.0\WorkTrack.Domain.pdb
+E:\Adama loum\PFF\WorkTrack.Domain\obj\Debug\net8.0\WorkTrack.Domain.GeneratedMSBuildEditorConfig.editorconfig
+E:\Adama loum\PFF\WorkTrack.Domain\obj\Debug\net8.0\WorkTrack.Domain.AssemblyInfoInputs.cache
+E:\Adama loum\PFF\WorkTrack.Domain\obj\Debug\net8.0\WorkTrack.Domain.AssemblyInfo.cs
+E:\Adama loum\PFF\WorkTrack.Domain\obj\Debug\net8.0\WorkTrack.Domain.csproj.CoreCompileInputs.cache
+E:\Adama loum\PFF\WorkTrack.Domain\obj\Debug\net8.0\WorkTrack.Domain.dll
+E:\Adama loum\PFF\WorkTrack.Domain\obj\Debug\net8.0\refint\WorkTrack.Domain.dll
+E:\Adama loum\PFF\WorkTrack.Domain\obj\Debug\net8.0\WorkTrack.Domain.pdb
+E:\Adama loum\PFF\WorkTrack.Domain\obj\Debug\net8.0\ref\WorkTrack.Domain.dll
