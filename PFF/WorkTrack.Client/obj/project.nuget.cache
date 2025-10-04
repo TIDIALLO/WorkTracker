@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "v3ct3DRQYNA=",
+  "dgSpecHash": "Vr8EWR8uVM8=",
   "success": true,
   "projectFilePath": "E:\\Adama loum\\PFF\\WorkTrack.Client\\WorkTrack.Client.csproj",
   "expectedPackageFiles": [
@@ -30,6 +30,7 @@
     "C:\\Users\\diall\\.nuget\\packages\\microsoft.jsinterop.webassembly\\9.0.6\\microsoft.jsinterop.webassembly.9.0.6.nupkg.sha512",
     "C:\\Users\\diall\\.nuget\\packages\\microsoft.net.illink.tasks\\9.0.6\\microsoft.net.illink.tasks.9.0.6.nupkg.sha512",
     "C:\\Users\\diall\\.nuget\\packages\\microsoft.net.sdk.webassembly.pack\\9.0.6\\microsoft.net.sdk.webassembly.pack.9.0.6.nupkg.sha512",
+    "C:\\Users\\diall\\.nuget\\packages\\system.net.http.json\\9.0.9\\system.net.http.json.9.0.9.nupkg.sha512",
     "C:\\Users\\diall\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\9.0.6\\microsoft.netcore.app.runtime.mono.browser-wasm.9.0.6.nupkg.sha512"
   ],
   "logs": []
