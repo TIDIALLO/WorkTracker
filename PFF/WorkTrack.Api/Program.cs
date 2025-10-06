@@ -5,6 +5,9 @@ using WorkTrack.Application;
 using Microsoft.AspNetCore.Mvc;
 
 using WorkTrack.Api.Seeding; // <-- SeedData.SeedDevAsync
+using QuestPDF.Infrastructure;
+
+QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,11 +29,13 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("wasm", p => p
-        .WithOrigins("https://localhost:5001", "http://localhost:5000")
+        .WithOrigins(
+            "http://localhost:5153", "http://localhost:7106", // tes anciens ports si tu les utilises
+            "http://localhost:5023", "http://localhost:7106", "https://localhost:7106"  // <-- mets ICI le(s) port(s) réel(s) du client
+        )
         .AllowAnyHeader()
         .AllowAnyMethod());
 });
-
 var app = builder.Build();
 
 // Migrate + Seed (dev)
@@ -329,7 +334,8 @@ var seancesGroup = app.MapGroup("/api/seances").WithTags("Séances");
 
 seancesGroup.MapGet("/today", async (AppDbContext db, CancellationToken ct) =>
 {
-    var start = DateTimeOffset.UtcNow.Date;
+    var now = DateTimeOffset.Now;
+    var start = new DateTimeOffset(now.Year, now.Month, now.Day, 0, 0, 0, now.Offset);
     var end = start.AddDays(1);
 
     var q = from s in db.Seances
@@ -392,6 +398,83 @@ seancesGroup.MapPost("/{seanceId:guid}/attendance", async (
 
     await db.SaveChangesAsync(ct);
     return Results.Ok();
+});
+
+// LISTE COMPLETE AVEC STATUT
+seancesGroup.MapGet("/{seanceId:guid}/attendance/list", async (Guid seanceId, AppDbContext db, CancellationToken ct) =>
+{
+    var seance = await db.Seances.FindAsync(new object?[] { seanceId }, ct);
+    if (seance is null) return Results.NotFound();
+    var aff = await db.Affectations.FindAsync(new object?[] { seance.AffectationId }, ct);
+    if (aff is null) return Results.NotFound();
+
+    var rows = await (
+        from a in db.Apprenants
+        join u in db.Utilisateurs on a.UtilisateurId equals u.Id
+        where a.PromotionId == aff.PromotionId
+        join pr0 in db.Presences.Where(p => p.SeanceId == seanceId)
+            on a.Id equals pr0.ApprenantId into gj
+        from pr in gj.DefaultIfEmpty()
+        orderby u.Nom, u.Prenom
+        select new AttendanceRowDto(
+            a.Id,
+            a.Matricule,
+            u.Nom + " " + u.Prenom,
+            pr == null ? "NonSaisi" :
+                (pr.Statut == StatutPresence.Present ? "Present" :
+                 pr.Statut == StatutPresence.Absent  ? "Absent"  : "Retard"),
+            pr != null ? (int?)pr.MinutesRetard : null,
+            pr != null ? pr.Commentaire : null
+        )
+    ).ToListAsync(ct);
+
+    return Results.Ok(rows);
+});
+
+// PDF
+seancesGroup.MapGet("/{seanceId:guid}/attendance/pdf", async (Guid seanceId, AppDbContext db, CancellationToken ct) =>
+{
+    var seance = await db.Seances.FindAsync(new object?[] { seanceId }, ct);
+    if (seance is null) return Results.NotFound();
+    var aff = await db.Affectations.FindAsync(new object?[] { seance.AffectationId }, ct);
+    if (aff is null) return Results.NotFound();
+
+    var meta = await (
+        from a in db.Affectations
+        join m in db.Modules on a.ModuleId equals m.Id
+        join p in db.Promotions on a.PromotionId equals p.Id
+        where a.Id == aff.Id
+        select new { Module = m.Code + " - " + m.Nom, Promotion = p.Nom }
+    ).FirstAsync(ct);
+
+    var rows = await (
+        from ap in db.Apprenants
+        join u in db.Utilisateurs on ap.UtilisateurId equals u.Id
+        where ap.PromotionId == aff.PromotionId
+        join pr0 in db.Presences.Where(p => p.SeanceId == seanceId)
+            on ap.Id equals pr0.ApprenantId into gj
+        from pr in gj.DefaultIfEmpty()
+        orderby u.Nom, u.Prenom
+        select new AttendanceRowDto(
+            ap.Id,
+            ap.Matricule,
+            u.Nom + " " + u.Prenom,
+            pr == null ? "NonSaisi" :
+                (pr.Statut == StatutPresence.Present ? "Present" :
+                 pr.Statut == StatutPresence.Absent  ? "Absent"  : "Retard"),
+            pr != null ? (int?)pr.MinutesRetard : null,
+            pr != null ? pr.Commentaire : null
+        )
+    ).ToListAsync(ct);
+
+    var bytes = WorkTrack.Api.Pdf.AttendancePdf.Create(
+        titre: "Feuille de présence",
+        sousTitre: $"{meta.Promotion} • {meta.Module} • {seance.Debut.LocalDateTime:dd/MM/yyyy HH:mm} - {seance.Fin.LocalDateTime:HH:mm} • Salle {seance.Salle}",
+        rows: rows
+    );
+
+    var fileName = $"Presence_{meta.Promotion}_{seance.Debut:yyyyMMdd_HHmm}.pdf";
+    return Results.File(bytes, "application/pdf", fileName);
 });
 
 // Liste + filtres

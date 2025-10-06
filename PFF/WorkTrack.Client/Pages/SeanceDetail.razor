@@ -1,0 +1,144 @@
+@page "/seances/{SeanceId:guid}"
+@inject WorkTrack.Client.Services.ISeancesService SeancesSvc
+@inject WorkTrack.Client.Services.IAttendanceService AttendanceSvc
+@using WorkTrack.Client.Models
+@using Microsoft.AspNetCore.Components.Forms
+
+<h3>Présences — Séance</h3>
+
+@if (_loading)
+{
+    <p>Chargement…</p>
+}
+else if (_roster.Count == 0)
+{
+    <p>Aucun apprenant à afficher.</p>
+}
+else
+{
+    <!-- IMPORTANT : on fournit un Model (même vide) -->
+    <EditForm Model="_formModel" OnValidSubmit="SaveAsync">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Matricule</th>
+                    <th>Nom</th>
+                    <th>Statut</th>
+                    <th>Min. retard</th>
+                    <th>Commentaire</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var stu in _roster)
+            {
+                <tr>
+                    <td>@stu.Matricule</td>
+                    <td>@stu.NomComplet</td>
+                    <td>
+                        <select class="form-select" @onchange="e => OnStatusChange(stu.ApprenantId, e)">
+                            @foreach (var st in _statusValues)
+                            {
+                                <option value="@st" selected="@IsSelected(stu.ApprenantId, st)">@st</option>
+                            }
+                        </select>
+                    </td>
+                    <td>
+                        <input class="form-control" type="number" min="0"
+                               value="@GetMinutes(stu.ApprenantId)"
+                               @onchange="e => OnMinutesChange(stu.ApprenantId, e)" />
+                    </td>
+                    <td>
+                        <input class="form-control"
+                               value="@GetComment(stu.ApprenantId)"
+                               @onchange="e => OnCommentChange(stu.ApprenantId, e)" />
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <button class="btn btn-success" type="submit" disabled="@_saving">
+            @(_saving ? "Enregistrement..." : "Enregistrer")
+        </button>
+        @if (!string.IsNullOrWhiteSpace(_message))
+        {
+            <p class="mt-2">@_message</p>
+        }
+    </EditForm>
+}
+
+@code {
+    [Parameter] public Guid SeanceId { get; set; }
+
+    private bool _loading = true;
+    private bool _saving = false;
+    private string? _message;
+
+    private List<RosterStudentDto> _roster = new();
+
+    private readonly AttendanceStatusDto[] _statusValues = new[]
+    {
+        AttendanceStatusDto.Present,
+        AttendanceStatusDto.Absent,
+        AttendanceStatusDto.Retard
+    };
+
+    // Modèle vide juste pour satisfaire EditForm (aucune validation ici)
+    private sealed class DummyFormModel { }
+    private readonly DummyFormModel _formModel = new();
+
+    // états locaux
+    private readonly Dictionary<Guid, AttendanceStatusDto> _status = new();
+    private readonly Dictionary<Guid, int?> _minutes = new();
+    private readonly Dictionary<Guid, string?> _comments = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _roster = await SeancesSvc.GetRosterAsync(SeanceId);
+        // init défaut = Present
+        foreach (var r in _roster)
+        {
+            _status[r.ApprenantId] = AttendanceStatusDto.Present;
+            _minutes[r.ApprenantId] = null;
+            _comments[r.ApprenantId] = null;
+        }
+        _loading = false;
+    }
+
+    bool IsSelected(Guid id, AttendanceStatusDto st)
+        => _status.TryGetValue(id, out var val) && val == st;
+
+    int? GetMinutes(Guid id) => _minutes.TryGetValue(id, out var v) ? v : null;
+    string? GetComment(Guid id) => _comments.TryGetValue(id, out var v) ? v : null;
+
+    void OnStatusChange(Guid id, ChangeEventArgs e)
+    {
+        if (Enum.TryParse<AttendanceStatusDto>(e.Value?.ToString(), out var st))
+            _status[id] = st;
+        StateHasChanged();
+    }
+
+    void OnMinutesChange(Guid id, ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var v)) _minutes[id] = v;
+        else _minutes[id] = null;
+    }
+
+    void OnCommentChange(Guid id, ChangeEventArgs e)
+        => _comments[id] = e.Value?.ToString();
+
+    async Task SaveAsync()
+    {
+        _saving = true; _message = null; StateHasChanged();
+
+        var payload = _roster.Select(r => new AttendanceMarkDto(
+            r.ApprenantId,
+            _status[r.ApprenantId],
+            _status[r.ApprenantId] == AttendanceStatusDto.Retard ? (_minutes[r.ApprenantId] ?? 0) : null,
+            _comments[r.ApprenantId]
+        )).ToList();
+
+        var ok = await AttendanceSvc.SubmitAsync(SeanceId, payload);
+        _saving = false;
+        _message = ok ? "Présences enregistrées ✅" : "Erreur lors de l'enregistrement ❌";
+    }
+}

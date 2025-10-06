@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "doS+xnJS2ps=",
+  "dgSpecHash": "Vf7xUa6igk8=",
   "success": true,
   "projectFilePath": "E:\\Adama loum\\PFF\\WorkTrack.Api\\WorkTrack.Api.csproj",
   "expectedPackageFiles": [
@@ -31,6 +31,7 @@
     "C:\\Users\\diall\\.nuget\\packages\\mono.texttemplating\\2.2.1\\mono.texttemplating.2.2.1.nupkg.sha512",
     "C:\\Users\\diall\\.nuget\\packages\\npgsql\\8.0.0\\npgsql.8.0.0.nupkg.sha512",
     "C:\\Users\\diall\\.nuget\\packages\\npgsql.entityframeworkcore.postgresql\\8.0.0\\npgsql.entityframeworkcore.postgresql.8.0.0.nupkg.sha512",
+    "C:\\Users\\diall\\.nuget\\packages\\questpdf\\2025.7.2\\questpdf.2025.7.2.nupkg.sha512",
     "C:\\Users\\diall\\.nuget\\packages\\swashbuckle.aspnetcore\\8.0.0\\swashbuckle.aspnetcore.8.0.0.nupkg.sha512",
     "C:\\Users\\diall\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\8.0.0\\swashbuckle.aspnetcore.swagger.8.0.0.nupkg.sha512",
     "C:\\Users\\diall\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\8.0.0\\swashbuckle.aspnetcore.swaggergen.8.0.0.nupkg.sha512",
