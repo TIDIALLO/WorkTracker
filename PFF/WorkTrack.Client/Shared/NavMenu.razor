@@ -1,7 +1,29 @@
-@* WorkTrack.Client/Shared/NavMenu.razor *@
+@inject IAuthService Auth
+@inject NavigationManager Nav
+
 <nav class="navbar navbar-expand">
   <a class="navbar-brand" href="/">WorkTrack</a>
   <div class="navbar-nav">
     <a class="nav-link" href="/seances">Séances</a>
   </div>
+
+  <div class="ms-auto navbar-nav">
+    <AuthorizeView>
+        <Authorized>
+            <a class="nav-link" href="/profile">@context.User.Identity?.Name</a>
+            <a class="nav-link" href="#" @onclick="Logout">Se déconnecter</a>
+        </Authorized>
+        <NotAuthorized>
+            <a class="nav-link" href="/login">Se connecter</a>
+        </NotAuthorized>
+    </AuthorizeView>
+  </div>
 </nav>
+
+@code {
+    private async Task Logout()
+    {
+        await Auth.LogoutAsync();
+        Nav.NavigateTo("/");
+    }
+}

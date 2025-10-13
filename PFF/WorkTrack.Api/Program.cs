@@ -3,9 +3,14 @@ using WorkTrack.Infrastructure;
 using WorkTrack.Domain.Entities;
 using WorkTrack.Application;
 using Microsoft.AspNetCore.Mvc;
-
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using WorkTrack.Api.Seeding; // <-- SeedData.SeedDevAsync
 using QuestPDF.Infrastructure;
+using Microsoft.OpenApi.Models;
 
 QuestPDF.Settings.License = LicenseType.Community;
 
@@ -13,8 +18,23 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Swagger / endpoints
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
+//builder.Services.AddSwaggerGen();
+// Swagger (avec support Bearer)
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "WorkTrack API", Version = "v1" });
+    var scheme = new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Tape: Bearer {votre_token_JWT}"
+    };
+    c.AddSecurityDefinition("Bearer", scheme);
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement { { scheme, Array.Empty<string>() } });
+});
 // PostgreSQL (clé appsettings: "DefaultConnection"; fallback env: WORKTRACK_CS)
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
@@ -36,6 +56,34 @@ builder.Services.AddCors(opt =>
         .AllowAnyHeader()
         .AllowAnyMethod());
 });
+
+
+// ===== JWT Auth =====
+var jwtKey      = builder.Configuration["Jwt:Key"]!;
+var jwtIssuer   = builder.Configuration["Jwt:Issuer"]!;
+var jwtAudience = builder.Configuration["Jwt:Audience"]!;
+var signingKey  = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(o =>
+    {
+        o.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = signingKey,
+            ValidateIssuer = true,
+            ValidIssuer = jwtIssuer,
+            ValidateAudience = true,
+            ValidAudience = jwtAudience,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+builder.Services.AddAuthorization(opt =>
+{
+    opt.AddPolicy("EnseignantOnly",  p => p.RequireRole(nameof(RoleUtilisateur.Enseignant)));
+    opt.AddPolicy("ResponsableOnly", p => p.RequireRole(nameof(RoleUtilisateur.Responsable)));
+    opt.AddPolicy("AdminOnly",       p => p.RequireRole(nameof(RoleUtilisateur.Administrateur)));
+});
 var app = builder.Build();
 
 // Migrate + Seed (dev)
@@ -44,7 +92,21 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
     if (app.Environment.IsDevelopment())
-        await SeedData.SeedDevAsync(db); // <-- seed séparé
+    {
+        var legacy = await db.Utilisateurs
+            .Where(u => string.IsNullOrEmpty(u.MotDePasseHash) || !u.MotDePasseHash.StartsWith("$2")) // "$2" = préfixe BCrypt
+            .ToListAsync();
+
+        if (legacy.Count > 0)
+        {
+            foreach (var u in legacy)
+                u.MotDePasseHash = BCrypt.Net.BCrypt.HashPassword("dev"); // on force "dev" pour tests
+
+            await db.SaveChangesAsync();
+        }
+
+        await SeedData.SeedDevAsync(db);
+    }
 }
 
 if (app.Environment.IsDevelopment())
@@ -54,6 +116,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseCors("wasm");
 
 // =====================================================
@@ -630,4 +695,61 @@ reports.MapGet("/apprenant-attendance/{apprenantId:guid}", async (
     });
 });
 
+
+// POST /api/auth/login  -> retourne { token, user { ... } }
+app.MapPost("/api/auth/login", async (LoginRequest req, AppDbContext db, CancellationToken ct) =>
+{
+    // 1) chercher l'utilisateur
+    var user = await db.Utilisateurs.FirstOrDefaultAsync(u => u.Email == req.Email, ct);
+    if (user is null)
+        return Results.Unauthorized();
+
+    // 2) vérifier mot de passe (BCrypt)
+    if (!BCrypt.Net.BCrypt.Verify(req.Password, user.MotDePasseHash))
+        return Results.Unauthorized();
+
+    // 3) créer le JWT
+    var claims = new List<Claim>
+    {
+        new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+        new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new(ClaimTypes.Name, $"{user.Prenom} {user.Nom}"),
+        new(ClaimTypes.Email, user.Email),
+        new(ClaimTypes.Role, user.Role.ToString())
+    };
+
+    var creds = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+    var token = new JwtSecurityToken(
+        issuer: jwtIssuer,
+        audience: jwtAudience,
+        claims: claims,
+        expires: DateTime.UtcNow.AddHours(8),
+        signingCredentials: creds);
+
+    var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+    // 4) réponse
+    return Results.Ok(new
+    {
+        token = jwt,
+        user = new { user.Id, user.Prenom, user.Nom, user.Email, Role = user.Role.ToString() }
+    });
+});
+
+// GET /api/auth/me -> infos du porteur du token
+app.MapGet("/api/auth/me", (ClaimsPrincipal me) =>
+{
+    if (me.Identity?.IsAuthenticated != true)
+        return Results.Unauthorized();
+
+    return Results.Ok(new
+    {
+        Id = me.FindFirstValue(ClaimTypes.NameIdentifier),
+        Name = me.Identity?.Name,
+        Email = me.FindFirstValue(ClaimTypes.Email),
+        Role = me.FindFirstValue(ClaimTypes.Role)
+    });
+}).RequireAuthorization();
+
 app.Run();
+record LoginRequest(string Email, string Password);

@@ -153,3 +153,12 @@ E:\Adama loum\PFF\WorkTrack.Api\obj\Debug\net8.0\refint\WorkTrack.Api.dll
 E:\Adama loum\PFF\WorkTrack.Api\obj\Debug\net8.0\WorkTrack.Api.pdb
 E:\Adama loum\PFF\WorkTrack.Api\obj\Debug\net8.0\WorkTrack.Api.genruntimeconfig.cache
 E:\Adama loum\PFF\WorkTrack.Api\obj\Debug\net8.0\ref\WorkTrack.Api.dll
+E:\Adama loum\PFF\WorkTrack.Api\bin\Debug\net8.0\BCrypt.Net-Next.dll
+E:\Adama loum\PFF\WorkTrack.Api\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+E:\Adama loum\PFF\WorkTrack.Api\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+E:\Adama loum\PFF\WorkTrack.Api\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+E:\Adama loum\PFF\WorkTrack.Api\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+E:\Adama loum\PFF\WorkTrack.Api\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
+E:\Adama loum\PFF\WorkTrack.Api\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+E:\Adama loum\PFF\WorkTrack.Api\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+E:\Adama loum\PFF\WorkTrack.Api\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll

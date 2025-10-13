@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WorkTrack.Client")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6ebe72e032be604a16ae86d6be537a9f0a151907")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b8b907f54966a02fc91d6cf9d35bcbd4970fdac4")]
 [assembly: System.Reflection.AssemblyProductAttribute("WorkTrack.Client")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WorkTrack.Client")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
