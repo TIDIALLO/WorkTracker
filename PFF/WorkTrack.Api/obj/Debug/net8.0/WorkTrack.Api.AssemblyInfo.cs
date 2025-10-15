@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WorkTrack.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b8b907f54966a02fc91d6cf9d35bcbd4970fdac4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+444460c93b66e2861ac8eae7dfd4cd4a328ef95f")]
 [assembly: System.Reflection.AssemblyProductAttribute("WorkTrack.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WorkTrack.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

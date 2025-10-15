@@ -10,3 +10,15 @@ E:\Adama loum\PFF\WorkTrack.Domain\obj\Debug\net8.0\WorkTrack.Domain.dll
 E:\Adama loum\PFF\WorkTrack.Domain\obj\Debug\net8.0\refint\WorkTrack.Domain.dll
 E:\Adama loum\PFF\WorkTrack.Domain\obj\Debug\net8.0\WorkTrack.Domain.pdb
 E:\Adama loum\PFF\WorkTrack.Domain\obj\Debug\net8.0\ref\WorkTrack.Domain.dll
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Domain\bin\Debug\net8.0\WorkTrack.Domain.deps.json
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Domain\bin\Debug\net8.0\WorkTrack.Domain.dll
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Domain\bin\Debug\net8.0\WorkTrack.Domain.pdb
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Domain\obj\Debug\net8.0\WorkTrack.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Domain\obj\Debug\net8.0\WorkTrack.Domain.AssemblyInfoInputs.cache
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Domain\obj\Debug\net8.0\WorkTrack.Domain.AssemblyInfo.cs
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Domain\obj\Debug\net8.0\WorkTrack.Domain.csproj.CoreCompileInputs.cache
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Domain\obj\Debug\net8.0\WorkTrack.Domain.sourcelink.json
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Domain\obj\Debug\net8.0\WorkTrack.Domain.dll
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Domain\obj\Debug\net8.0\refint\WorkTrack.Domain.dll
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Domain\obj\Debug\net8.0\WorkTrack.Domain.pdb
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Domain\obj\Debug\net8.0\ref\WorkTrack.Domain.dll

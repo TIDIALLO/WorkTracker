@@ -13,3 +13,27 @@ public record AttendanceMarkDto(Guid ApprenantId, AttendanceStatusDto Statut, in
 public record AttendanceRowDto(
     Guid ApprenantId, string Matricule, string NomComplet,
     string Statut, int? MinutesRetard, string? Commentaire);
+
+public class EnseignantDto
+    {
+        public Guid Id { get; set; }
+        public Guid UtilisateurId { get; set; }
+        public string? Prenom { get; set; }
+        public string? Nom { get; set; }
+        public string? Email { get; set; }
+        public string? Specialite { get; set; }
+    }
+
+    public class EnseignantCreateOrUpdateDto
+    {
+        public Guid? UtilisateurId { get; set; }
+        public string? Specialite { get; set; }
+    }
+
+    public class UtilisateurDto
+    {
+        public Guid Id { get; set; }
+        public string? Prenom { get; set; }
+        public string? Nom { get; set; }
+        public string? Email { get; set; }
+    }

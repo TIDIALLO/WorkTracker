@@ -1,0 +1,96 @@
+@page "/enseignants/add"
+@using WorkTrack.Client.Models
+@using Microsoft.AspNetCore.Components.Forms
+@inject HttpClient Http
+@inject NavigationManager Nav
+@inject WorkTrack.Client.Services.IEnseignantsService EnseignantsService
+@inject IJSRuntime JS
+
+<h3>Ajouter un enseignant</h3>
+
+@if (_loading)
+{
+    <p>Chargement...</p>
+}
+else
+{
+    <EditForm Model="_model" OnValidSubmit="OnSubmitAsync">
+        <div class="card p-4">
+            <div class="mb-3">
+                <label class="form-label">Utilisateur</label>
+
+                <InputSelect @bind-Value="_model.UtilisateurId" class="form-select">
+                    <option value="">-- Sélectionner un utilisateur --</option>
+                    @foreach (var u in _utilisateurs)
+                    {
+                        <option value="@u.Id">@u.Prenom @u.Nom (@u.Email)</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Spécialité</label>
+                <input class="form-control" @bind="_model.Specialite" />
+            </div>
+
+            <div class="d-flex gap-2">
+                <button class="btn btn-success" type="submit" disabled="@_saving">@(_saving ? "Enregistrement..." : "Enregistrer")</button>
+                <button type="button" class="btn btn-secondary" @onclick="Cancel">Annuler</button>
+            </div>
+        </div>
+    </EditForm>
+}
+
+@code {
+    private bool _loading = true;
+    private bool _saving = false;
+
+    private List<UtilisateurDto> _utilisateurs = new();
+    private EnseignantCreateOrUpdateDto _model = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        try
+        {
+            _utilisateurs = await Http.GetFromJsonAsync<List<UtilisateurDto>>("api/utilisateurs") ?? new();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+            await JS.InvokeVoidAsync("alert", "Impossible de charger les utilisateurs.");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        Nav.NavigateTo("/enseignants");
+    }
+
+    private async Task OnSubmitAsync()
+    {
+        // si UtilisateurId est nullable (Guid?), on vérifie HasValue
+        if (!_model.UtilisateurId.HasValue || _model.UtilisateurId.Value == Guid.Empty)
+        {
+            await JS.InvokeVoidAsync("alert", "Veuillez sélectionner un utilisateur.");
+            return;
+        }
+
+        _saving = true;
+        var ok = await EnseignantsService.CreateAsync(_model);
+        _saving = false;
+
+        if (ok)
+        {
+            Nav.NavigateTo("/enseignants");
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Erreur lors de la création.");
+        }
+    }
+}

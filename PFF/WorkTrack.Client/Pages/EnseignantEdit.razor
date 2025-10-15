@@ -1,0 +1,132 @@
+@page "/enseignants/{Id:guid}/edit"
+@using WorkTrack.Client.Models
+@inject HttpClient Http
+@inject NavigationManager Nav
+@inject WorkTrack.Client.Services.IEnseignantsService EnseignantsService
+@inject IJSRuntime JS
+
+<h3>Modifier un enseignant</h3>
+
+@if (_loading)
+{
+    <p>Chargement...</p>
+}
+else if (_notFound)
+{
+    <div class="alert alert-warning">Enseignant introuvable.</div>
+}
+else
+{
+    <EditForm Model="_model" OnValidSubmit="OnSubmitAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="card p-4">
+            <div class="mb-3">
+                <label class="form-label">Utilisateur</label>
+                <InputSelect @bind-Value="_model.UtilisateurId" class="form-select" required>
+                    <option value="">-- Sélectionner un utilisateur --</option>
+                    @foreach (var u in _utilisateurs)
+                    {
+                        <option value="@u.Id">@u.Prenom @u.Nom (@u.Email)</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Spécialité</label>
+                <InputText @bind-Value="_model.Specialite" class="form-control" />
+            </div>
+
+            <div class="d-flex gap-2">
+                <button class="btn btn-primary" type="submit" disabled="@_saving">@(_saving ? "Enregistrement..." : "Enregistrer")</button>
+                <button type="button" class="btn btn-secondary" @onclick="Cancel">Annuler</button>
+            </div>
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private bool _loading = true;
+    private bool _saving = false;
+    private bool _notFound = false;
+
+    private List<UtilisateurDto> _utilisateurs = new();
+    private EnseignantCreateOrUpdateDto _model = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        _notFound = false;
+
+        try
+        {
+            // charge utilisateurs pour le select
+            _utilisateurs = await Http.GetFromJsonAsync<List<UtilisateurDto>>("api/utilisateurs") ?? new();
+
+            // charge l'enseignant existant
+            var enseignant = await EnseignantsService.GetByIdAsync(Id);
+            if (enseignant is null)
+            {
+                _notFound = true;
+                return;
+            }
+
+            // préremplit le modèle d'édition (utiliser Guid? pour le select)
+            _model = new EnseignantCreateOrUpdateDto
+            {
+                UtilisateurId = enseignant.UtilisateurId == Guid.Empty ? null : enseignant.UtilisateurId,
+                Specialite = enseignant.Specialite
+            };
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+            await JS.InvokeVoidAsync("alert", "Erreur lors du chargement des données.");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        Nav.NavigateTo("/enseignants");
+    }
+
+    private async Task OnSubmitAsync()
+    {
+        if (!_model.UtilisateurId.HasValue || _model.UtilisateurId.Value == Guid.Empty)
+        {
+            await JS.InvokeVoidAsync("alert", "Veuillez sélectionner un utilisateur.");
+            return;
+        }
+
+        _saving = true;
+        try
+        {
+            var ok = await EnseignantsService.UpdateAsync(Id, _model);
+            if (ok)
+            {
+                await JS.InvokeVoidAsync("alert", "✅ Enseignant modifié avec succès !");
+                Nav.NavigateTo("/enseignants");
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("alert", "Erreur lors de la modification.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+            await JS.InvokeVoidAsync("alert", "Erreur lors de la modification.");
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}

@@ -1,0 +1,219 @@
+@page "/enseignants/{EnseignantId:guid}"
+@using WorkTrack.Client.Models
+@inject WorkTrack.Client.Services.IEnseignantsService EnseignantsService
+@inject WorkTrack.Client.Services.ISeancesService SeancesService
+@inject HttpClient Http
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<h3>Infos Enseignant</h3>
+
+@if (_loading)
+{
+    <p>Chargement…</p>
+}
+else if (_notFound)
+{
+    <div class="alert alert-warning">Enseignant introuvable.</div>
+}
+else
+{
+    <!-- NOUVELLE SECTION : détails complets (affichés quand _showAll == true) -->
+    @if (_showAll)
+    {
+
+    <div class="d-flex justify-content-end mb-3">
+        <a class="btn btn-primary btn-sm-2" href="/enseignants">← Retour</a>
+    </div>
+
+
+        <div class="card mb-3 p-3">
+            <h6>Détails complets</h6>
+            <dl class="row">
+                <dt class="col-sm-3">Id</dt>
+                <dd class="col-sm-9">@_enseignant.Id</dd>
+
+                <dt class="col-sm-3">UtilisateurId</dt>
+                <dd class="col-sm-9">@_enseignant.UtilisateurId</dd>
+
+                <dt class="col-sm-3">Prénom</dt>
+                <dd class="col-sm-9">@(_enseignant.Prenom ?? "-")</dd>
+
+                <dt class="col-sm-3">Nom</dt>
+                <dd class="col-sm-9">@(_enseignant.Nom ?? "-")</dd>
+
+                <dt class="col-sm-3">Email</dt>
+                <dd class="col-sm-9">@(_enseignant.Email ?? "-")</dd>
+
+                <dt class="col-sm-3">Spécialité</dt>
+                <dd class="col-sm-9">@(_enseignant.Specialite ?? "-")</dd>
+
+                <!-- champs additionnels (s’il en existe) -->
+                @if (_enseignant is not null)
+                {
+                    @* Exemples : CreatedBy, CreatedAt — affichés si présents *@
+                    @if (TryGetProperty(_enseignant, "CreePar", out var creePar)) {
+                        <dt class="col-sm-3">Créé par</dt><dd class="col-sm-9">@creePar</dd>
+                    }
+                    @if (TryGetProperty(_enseignant, "CreeLe", out var creeLe)) {
+                        <dt class="col-sm-3">Créé le</dt><dd class="col-sm-9">@creeLe</dd>
+                    }
+                }
+            </dl>
+
+            <h6 class="mt-3">Séances liées (prochaines 30 jours)</h6>
+            @if (_seancesLoading)
+            {
+                <p>Chargement des séances…</p>
+            }
+            else if (_seances == null || !_seances.Any())
+            {
+                <p>Aucune séance trouvée pour cet enseignant.</p>
+            }
+            else
+            {
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Début</th>
+                            <th>Fin</th>
+                            <th>Module</th>
+                            <th>Promotion</th>
+                            <th>Salle</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in _seances)
+                        {
+                            <tr>
+                                <td>@s.Debut.LocalDateTime.ToString("dd/MM HH:mm")</td>
+                                <td>@s.Fin.LocalDateTime.ToString("HH:mm")</td>
+                                <td>@($"{s.ModuleCode} - {s.ModuleNom}")</td>
+                                <td>@s.PromotionNom</td>
+                                <td>@(s.Salle ?? "-")</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" @onclick="() => OpenSeance(s.Id)">Voir</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    }
+}
+
+@code {
+    [Parameter] public Guid EnseignantId { get; set; }
+
+    private bool _loading = true;
+    private bool _notFound = false;
+    private bool _showAll = true;
+
+    private EnseignantDto _enseignant = new();
+    private List<SeanceDto> _seances = new();
+    private bool _seancesLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAllAsync();
+    }
+
+    private async Task LoadAllAsync()
+    {
+        _loading = true;
+        _notFound = false;
+        try
+        {
+            var e = await EnseignantsService.GetByIdAsync(EnseignantId);
+            if (e is null)
+            {
+                _notFound = true;
+                return;
+            }
+            _enseignant = e;
+
+            // complète prénom/nom/email si manquant (utilisateur lié)
+            if ((_enseignant.Prenom == null || _enseignant.Nom == null || _enseignant.Email == null)
+                && _enseignant.UtilisateurId != Guid.Empty)
+            {
+                try
+                {
+                    var user = await Http.GetFromJsonAsync<UtilisateurDto>($"api/utilisateurs/{_enseignant.UtilisateurId}");
+                    if (user != null)
+                    {
+                        _enseignant.Prenom = user.Prenom ?? _enseignant.Prenom;
+                        _enseignant.Nom = user.Nom ?? _enseignant.Nom;
+                        _enseignant.Email = user.Email ?? _enseignant.Email;
+                    }
+                }
+                catch { /* ignore */ }
+            }
+
+            // load seances
+            _seancesLoading = true;
+            var now = DateTimeOffset.Now;
+            _seances = await SeancesService.GetAsync(now, now.AddDays(30), EnseignantId, null);
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+            _notFound = true;
+        }
+        finally
+        {
+            _seancesLoading = false;
+            _loading = false;
+        }
+    }
+
+    private void ToggleShowAll()
+    {
+        _showAll = !_showAll;
+    }
+
+    private void Editer()
+    {
+        Nav.NavigateTo($"/enseignants/{EnseignantId}/edit");
+    }
+
+    private async Task SupprimerAsync()
+    {
+        var ok = await JS.InvokeAsync<bool>("confirm", "Supprimer cet enseignant ? Cette action est définitive.");
+        if (!ok) return;
+
+        var deleted = await EnseignantsService.DeleteAsync(EnseignantId);
+        if (deleted) Nav.NavigateTo("/enseignants");
+        else await JS.InvokeVoidAsync("alert", "Erreur lors de la suppression.");
+    }
+
+    // helper: reflectif safe pour afficher propriétés additionnelles si présentes
+    private bool TryGetProperty(object obj, string propName, out object? value)
+    {
+        value = null;
+        if (obj == null) return false;
+        var p = obj.GetType().GetProperty(propName);
+        if (p == null) return false;
+        value = p.GetValue(obj);
+        return true;
+    }
+
+    
+    private void OpenSeance(Guid Id)
+    {
+        Nav.NavigateTo($"/seances/{Id}");
+    }
+
+    // petit DTO local si tu n'as pas de modèle global
+    public class UtilisateurDto
+    {
+        public Guid Id { get; set; }
+        public string? Prenom { get; set; }
+        public string? Nom { get; set; }
+        public string? Email { get; set; }
+    }
+
+
+
+}

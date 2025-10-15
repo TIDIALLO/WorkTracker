@@ -26,6 +26,8 @@ builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStatePr
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ISeancesService, SeancesService>();
 builder.Services.AddScoped<IAttendanceService, AttendanceService>();
+builder.Services.AddScoped<IEnseignantsService, EnseignantsService>();
+
 
 var host = builder.Build();
 
