@@ -6,6 +6,311 @@
 @inject WorkTrack.Client.Services.IEnseignantsService EnseignantsService
 @inject IJSRuntime JS
 
+<div class="overlay">
+    <div class="modal-box">
+        <h3>Ajouter un enseignant</h3>
+
+        @if (_loading)
+        {
+            <p>Chargement des utilisateurs...</p>
+        }
+        else
+        {
+            <EditForm Model="_model" OnValidSubmit="OnSubmitAsync">
+                <div class="mb-3">
+                    <label class="form-label">Utilisateur</label>
+                    <InputSelect @bind-Value="_model.UtilisateurId" class="form-select">
+                        <option value="">-- Sélectionner un utilisateur --</option>
+                        @foreach (var u in _utilisateurs)
+                        {
+                            <option value="@u.Id">@u.Prenom @u.Nom (@u.Email)</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Spécialité</label>
+                    <input class="form-control" @bind="_model.Specialite" />
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <button class="btn btn-success" type="submit" disabled="@_saving">
+                        @(_saving ? "Enregistrement..." : "Enregistrer")
+                    </button>
+                    <button type="button" class="btn btn-secondary" @onclick="Cancel">Annuler</button>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>
+
+@code {
+    private bool _loading = true;
+    private bool _saving = false;
+
+    private List<UtilisateurDto> _utilisateurs = new();
+    private EnseignantCreateOrUpdateDto _model = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        try
+        {
+            _utilisateurs = await Http.GetFromJsonAsync<List<UtilisateurDto>>("api/utilisateurs") ?? new();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+            await JS.InvokeVoidAsync("alert", "Impossible de charger les utilisateurs.");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        Nav.NavigateTo("/enseignants");
+    }
+
+    private async Task OnSubmitAsync()
+    {
+        if (!_model.UtilisateurId.HasValue || _model.UtilisateurId.Value == Guid.Empty)
+        {
+            await JS.InvokeVoidAsync("alert", "Veuillez sélectionner un utilisateur.");
+            return;
+        }
+
+        _saving = true;
+        var ok = await EnseignantsService.CreateAsync(_model);
+        _saving = false;
+
+        if (ok)
+        {
+            Nav.NavigateTo("/enseignants");
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Erreur lors de la création.");
+        }
+    }
+}
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(to right, #e0f7fa, #f1f8e9);
+    }
+
+    .overlay {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        padding: 1rem;
+    }
+
+    .modal-box {
+        background-color: #ffffff;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        width: 500px;
+        max-width: 100%;
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    h3 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        color: #2e7d32;
+    }
+
+    .form-label {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .btn-success {
+        background-color: #4caf50;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-success:hover {
+        background-color: #45a049;
+    }
+
+    .btn-secondary {
+        background-color: #9e9e9e;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background-color: #757575;
+    }
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+@* @page "/enseignants/add"
+@using WorkTrack.Client.Models
+@inject HttpClient Http
+@inject NavigationManager Nav
+@inject WorkTrack.Client.Services.IEnseignantsService EnseignantsService
+@inject IJSRuntime JS
+
+<div class="overlay">
+    <div class="modal-box">
+        <h3>Ajouter un enseignant</h3>
+
+        @if (_loading)
+        {
+            <p>Chargement...</p>
+        }
+        else
+        {
+            <EditForm Model="_model" OnValidSubmit="OnSubmitAsync">
+                <div class="mb-3">
+                    <label class="form-label">Utilisateur</label>
+                    <InputSelect @bind-Value="_model.UtilisateurId" class="form-select">
+                        <option value="">-- Sélectionner un utilisateur --</option>
+                        @foreach (var u in _utilisateurs)
+                        {
+                            <option value="@u.Id">@u.Prenom @u.Nom (@u.Email)</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Spécialité</label>
+                    <input class="form-control" @bind="_model.Specialite" />
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button class="btn btn-success" type="submit" disabled="@_saving">@(_saving ? "Enregistrement..." : "Enregistrer")</button>
+                    <button type="button" class="btn btn-secondary" @onclick="Cancel">Annuler</button>
+                </div>
+            </EditForm>
+        }
+    </div>
+</div>
+
+@code {
+    // ton code existant ici...
+    private bool _loading = true;
+    private bool _saving = false;
+
+    private List<UtilisateurDto> _utilisateurs = new();
+    private EnseignantCreateOrUpdateDto _model = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        try
+        {
+            _utilisateurs = await Http.GetFromJsonAsync<List<UtilisateurDto>>("api/utilisateurs") ?? new();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+            await JS.InvokeVoidAsync("alert", "Impossible de charger les utilisateurs.");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        Nav.NavigateTo("/enseignants");
+    }
+
+    private async Task OnSubmitAsync()
+    {
+        // si UtilisateurId est nullable (Guid?), on vérifie HasValue
+        if (!_model.UtilisateurId.HasValue || _model.UtilisateurId.Value == Guid.Empty)
+        {
+            await JS.InvokeVoidAsync("alert", "Veuillez sélectionner un utilisateur.");
+            return;
+        }
+
+        _saving = true;
+        var ok = await EnseignantsService.CreateAsync(_model);
+        _saving = false;
+
+        if (ok)
+        {
+            Nav.NavigateTo("/enseignants");
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Erreur lors de la création.");
+        }
+    }
+}
+
+<style>
+.overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.05); /* léger fond gris */
+}
+
+.modal-box {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    width: 500px;
+    max-width: 90%;
+}
+</style> *@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@* @page "/enseignants/add"
+@using WorkTrack.Client.Models
+@using Microsoft.AspNetCore.Components.Forms
+@inject HttpClient Http
+@inject NavigationManager Nav
+@inject WorkTrack.Client.Services.IEnseignantsService EnseignantsService
+@inject IJSRuntime JS
+
 <h3>Ajouter un enseignant</h3>
 
 @if (_loading)
@@ -93,4 +398,7 @@ else
             await JS.InvokeVoidAsync("alert", "Erreur lors de la création.");
         }
     }
-}
+} *@
+
+
+

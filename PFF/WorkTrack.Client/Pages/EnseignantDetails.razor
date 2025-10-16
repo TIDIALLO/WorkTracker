@@ -6,6 +6,7 @@
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 
+
 <h3>Infos Enseignant</h3>
 
 @if (_loading)
@@ -51,7 +52,7 @@ else
                 <!-- champs additionnels (s’il en existe) -->
                 @if (_enseignant is not null)
                 {
-                    @* Exemples : CreatedBy, CreatedAt — affichés si présents *@
+                     @*Exemples : CreatedBy, CreatedAt — affichés si présents*@
                     @if (TryGetProperty(_enseignant, "CreePar", out var creePar)) {
                         <dt class="col-sm-3">Créé par</dt><dd class="col-sm-9">@creePar</dd>
                     }
@@ -213,7 +214,5 @@ else
         public string? Nom { get; set; }
         public string? Email { get; set; }
     }
-
-
 
 }

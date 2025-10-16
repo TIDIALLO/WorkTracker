@@ -1,0 +1,110 @@
+@page "/modules/{Id:guid}/edit"
+@using WorkTrack.Client.Models
+@inject IModulesService ModulesService
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<div class="form-container">
+    <h3>✏️ Modifier le module</h3>
+
+    @if (_loading)
+    {
+        <p>Chargement...</p>
+    }
+    else if (_notFound)
+    {
+        <div class="alert alert-warning">Module introuvable.</div>
+    }
+    else
+    {
+        <EditForm Model="_model" OnValidSubmit="OnSubmitAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="mb-3">
+                <label class="form-label">Code</label>
+                <InputText @bind-Value="_model.Code" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Nom</label>
+                <InputText @bind-Value="_model.Nom" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Coefficient</label>
+                <InputNumber @bind-Value="_model.Coefficient" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">ECTS</label>
+                <InputNumber @bind-Value="_model.Ects" class="form-control" />
+            </div>
+
+            <div class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-primary" type="submit">Enregistrer</button>
+                <button class="btn btn-secondary" type="button" @onclick="Annuler">Annuler</button>
+            </div>
+        </EditForm>
+    }
+</div>
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private ModuleDto _model = new();
+    private bool _loading = true;
+    private bool _notFound = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var module = await ModulesService.GetByIdAsync(Id);
+        if (module == null)
+        {
+            _notFound = true;
+            return;
+        }
+
+        _model = module;
+        _loading = false;
+    }
+
+    private async Task OnSubmitAsync()
+    {
+        var ok = await ModulesService.UpdateAsync(Id, _model);
+        if (ok)
+        {
+            await JS.InvokeVoidAsync("alert", "✅ Module modifié avec succès !");
+            Nav.NavigateTo("/modules");
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Erreur lors de la modification.");
+        }
+    }
+
+    private void Annuler() => Nav.NavigateTo("/modules");
+}
+
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 3rem auto;
+        padding: 2rem;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    h3 {
+        text-align: center;
+        color: #1565c0;
+        margin-bottom: 1.5rem;
+    }
+</style>

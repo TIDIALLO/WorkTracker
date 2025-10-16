@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using WorkTrack.Client;
 using WorkTrack.Client.Services;
+using WorkTrack.Client.Services.Interfaces;
+
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -27,6 +29,11 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ISeancesService, SeancesService>();
 builder.Services.AddScoped<IAttendanceService, AttendanceService>();
 builder.Services.AddScoped<IEnseignantsService, EnseignantsService>();
+builder.Services.AddScoped<IModulesService, ModulesService>();
+builder.Services.AddScoped<IAffectationsService, AffectationsService>();
+builder.Services.AddScoped<IFilieresService, FilieresService>();
+
+
 
 
 var host = builder.Build();

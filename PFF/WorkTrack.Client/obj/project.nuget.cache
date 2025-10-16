@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "4MNTA6NAh/s=",
+  "dgSpecHash": "nR2k97xnCyI=",
   "success": true,
   "projectFilePath": "C:\\Users\\HP\\Documents\\wtr\\WorkTracker\\PFF\\WorkTrack.Client\\WorkTrack.Client.csproj",
   "expectedPackageFiles": [
@@ -34,11 +34,11 @@
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.identitymodel.tokens\\8.14.0\\microsoft.identitymodel.tokens.8.14.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.jsinterop\\9.0.6\\microsoft.jsinterop.9.0.6.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\microsoft.jsinterop.webassembly\\9.0.6\\microsoft.jsinterop.webassembly.9.0.6.nupkg.sha512",
-    "C:\\Users\\HP\\.nuget\\packages\\microsoft.net.illink.tasks\\9.0.9\\microsoft.net.illink.tasks.9.0.9.nupkg.sha512",
-    "C:\\Users\\HP\\.nuget\\packages\\microsoft.net.sdk.webassembly.pack\\9.0.9\\microsoft.net.sdk.webassembly.pack.9.0.9.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\microsoft.net.illink.tasks\\9.0.10\\microsoft.net.illink.tasks.9.0.10.nupkg.sha512",
+    "C:\\Users\\HP\\.nuget\\packages\\microsoft.net.sdk.webassembly.pack\\9.0.10\\microsoft.net.sdk.webassembly.pack.9.0.10.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\system.identitymodel.tokens.jwt\\8.14.0\\system.identitymodel.tokens.jwt.8.14.0.nupkg.sha512",
     "C:\\Users\\HP\\.nuget\\packages\\system.net.http.json\\9.0.9\\system.net.http.json.9.0.9.nupkg.sha512",
-    "C:\\Users\\HP\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\9.0.9\\microsoft.netcore.app.runtime.mono.browser-wasm.9.0.9.nupkg.sha512"
+    "C:\\Users\\HP\\.nuget\\packages\\microsoft.netcore.app.runtime.mono.browser-wasm\\9.0.10\\microsoft.netcore.app.runtime.mono.browser-wasm.9.0.10.nupkg.sha512"
   ],
   "logs": []
 }

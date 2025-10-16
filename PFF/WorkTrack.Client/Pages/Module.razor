@@ -1,0 +1,83 @@
+@page "/modules"
+@inject IModulesService ModulesService
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<h3 class="text-center mb-4">📘 Liste des Modules</h3>
+
+<div class=" justify-content-end mb-3">
+    <button class="btn btn-primary" @onclick="Ajouter">➕ Ajouter un module</button>
+</div>
+
+@if (_loading)
+{
+    <p>Chargement...</p>
+}
+else if (_modules == null || !_modules.Any())
+{
+    <div class="alert alert-info">Aucun module trouvé.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Nom</th>
+                <th>Coefficient</th>
+                <th>ECTS</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var m in _modules)
+            {
+                <tr>
+                    <td>@m.Code</td>
+                    <td>@m.Nom</td>
+                    <td>@(m.Coefficient?.ToString() ?? "-")</td>
+                    <td>@(m.Ects?.ToString() ?? "-")</td>
+                    <td class="text-center">
+                        <button class="btn btn-info btn-sm" @onclick="() => VoirDetails(m.Id)">👁️ Détails</button>
+                        <button class="btn btn-warning btn-sm" @onclick="() => Modifier(m.Id)">✏️ Modifier</button>
+                        <button class="btn btn-danger btn-sm ms-2" @onclick="() => SupprimerAsync(m.Id)">🗑️ Supprimer</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<ModuleDto> _modules = new();
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ChargerModules();
+    }
+
+    private async Task ChargerModules()
+    {
+        _loading = true;
+        _modules = await ModulesService.GetAllAsync();
+        _loading = false;
+    }
+    private void VoirDetails(Guid id)
+{
+    Nav.NavigateTo($"/modules/{id}");
+}
+
+    private void Ajouter() => Nav.NavigateTo("/modules/add");
+    private void Modifier(Guid id) => Nav.NavigateTo($"/modules/{id}/edit");
+
+    private async Task SupprimerAsync(Guid id)
+    {
+        var confirm = await JS.InvokeAsync<bool>("confirm", "Supprimer ce module ?");
+        if (!confirm) return;
+
+        var ok = await ModulesService.DeleteAsync(id);
+        if (ok) await ChargerModules();
+        else await JS.InvokeVoidAsync("alert", "Erreur lors de la suppression.");
+    }
+}

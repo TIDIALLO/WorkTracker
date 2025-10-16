@@ -376,6 +376,12 @@ affectations.MapPost("", async (AppDbContext db, AffectationModule a, Cancellati
     db.Affectations.Add(a); await db.SaveChangesAsync(ct);
     return Results.Created($"/api/affectations/{a.Id}", a);
 });
+affectations.MapGet("/{id:guid}", async (Guid id, AppDbContext db, CancellationToken ct) =>
+{
+    var a = await db.Affectations.FindAsync(new object?[] { id }, ct);
+    return a is null ? Results.NotFound() : Results.Ok(a);
+});
+
 affectations.MapPut("/{id:guid}", async (Guid id, AppDbContext db, AffectationModule input, CancellationToken ct) =>
 {
     var a = await db.Affectations.FindAsync(new object?[] { id }, ct);

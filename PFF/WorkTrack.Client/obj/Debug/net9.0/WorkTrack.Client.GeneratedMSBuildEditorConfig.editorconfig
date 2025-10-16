@@ -28,6 +28,22 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/AffectationAdd.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWZmZWN0YXRpb25BZGQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/AffectationDetail.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWZmZWN0YXRpb25EZXRhaWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/AffectationEdit.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWZmZWN0YXRpb25FZGl0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/Affectations.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWZmZWN0YXRpb25zLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/Counter.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ291bnRlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
@@ -48,12 +64,44 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRW5zZWlnbmFudEVkaXQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/FiliereAdd.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmlsaWVyZUFkZC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/FiliereDetails.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmlsaWVyZURldGFpbHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/FiliereEdit.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmlsaWVyZUVkaXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/Filieres.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmlsaWVyZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSG9tZS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/Login.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/Module.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTW9kdWxlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/ModuleAdd.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTW9kdWxlQWRkLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/ModuleDetail.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTW9kdWxlRGV0YWlsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/ModuleEdit.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTW9kdWxlRWRpdC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/SeanceDetail.razor]

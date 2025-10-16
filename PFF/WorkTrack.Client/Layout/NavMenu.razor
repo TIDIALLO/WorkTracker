@@ -9,7 +9,7 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="nav flex-column">
-        <div class="nav-item px-3">
+        @* <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
             </NavLink>
@@ -23,9 +23,33 @@
             <NavLink class="nav-link" href="/enseignants">
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Enseignant
             </NavLink>
-        </div>
+        </div> *@
+
+            <NavLink class="nav-link" href="enseignants" Match="NavLinkMatch.All">
+                <i class="bi bi-person-badge-fill me-2"></i> Enseignants
+            </NavLink>
+
+            <NavLink class="nav-link" href="modules" Match="NavLinkMatch.All">
+                <i class="bi bi-journal-bookmark-fill me-2"></i> Modules
+            </NavLink>
+
+            <NavLink class="nav-link" href="affectations" Match="NavLinkMatch.All">
+                <i class="bi bi-diagram-3-fill me-2"></i> Affectations
+            </NavLink>
+
+            <NavLink class="nav-link" href="/seances" Match="NavLinkMatch.All">
+                <i class="bi bi-calendar-check-fill me-2"></i> Séances
+            </NavLink>
+
+            <NavLink class="nav-link" href="/filieres" Match="NavLinkMatch.All">
+                <i class="bi bi-journals me-2"></i> Filières
+            </NavLink>
+
+
+        
     </nav>
 </div>
+
 
 @code {
     private bool collapseNavMenu = true;
