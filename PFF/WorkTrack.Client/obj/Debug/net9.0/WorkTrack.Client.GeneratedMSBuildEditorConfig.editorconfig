@@ -1,0 +1,137 @@
+is_global = true
+build_property.EnableAotAnalyzer = 
+build_property.EnableSingleFileAnalyzer = 
+build_property.EnableTrimAnalyzer = false
+build_property.IncludeAllContentForSelfExtract = 
+build_property.TargetFramework = net9.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = false
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = browser
+build_property.RootNamespace = WorkTrack.Client
+build_property.RootNamespace = WorkTrack.Client
+build_property.ProjectDir = C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Client\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = false
+build_property.RazorLangVersion = 9.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Client
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 9.0
+build_property.EnableCodeStyleSeverity = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/AffectationAdd.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWZmZWN0YXRpb25BZGQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/AffectationDetail.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWZmZWN0YXRpb25EZXRhaWwucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/AffectationEdit.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWZmZWN0YXRpb25FZGl0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/Affectations.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWZmZWN0YXRpb25zLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/Counter.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ291bnRlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/Enseignant.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRW5zZWlnbmFudC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/EnseignantAdd.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRW5zZWlnbmFudEFkZC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/EnseignantDetails.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRW5zZWlnbmFudERldGFpbHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/EnseignantEdit.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRW5zZWlnbmFudEVkaXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/FiliereAdd.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmlsaWVyZUFkZC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/FiliereDetails.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmlsaWVyZURldGFpbHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/FiliereEdit.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmlsaWVyZUVkaXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/Filieres.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRmlsaWVyZXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSG9tZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/Module.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTW9kdWxlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/ModuleAdd.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTW9kdWxlQWRkLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/ModuleDetail.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTW9kdWxlRGV0YWlsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/ModuleEdit.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTW9kdWxlRWRpdC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/SeanceDetail.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2VhbmNlRGV0YWlsLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/SeanceRecap.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2VhbmNlUmVjYXAucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/Seances.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2VhbmNlcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Pages/Weather.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcV2VhdGhlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Shared/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXE5hdk1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0XE1haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-4o45h1xstr
+
+[C:/Users/HP/Documents/wtr/WorkTracker/PFF/WorkTrack.Client/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0XE5hdk1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-8gggaxmcrx

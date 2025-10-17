@@ -1,0 +1,59 @@
+@page "/filieres/add"
+@inject IFilieresService FilieresService
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+@using WorkTrack.Client.Services.Interfaces;
+<h3>➕ Ajouter une Filière</h3>
+
+<EditForm Model="_model" OnValidSubmit="OnSubmitAsync">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">Nom</label>
+        <InputText class="form-control" @bind-Value="_model.Nom" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Niveau</label>
+        <InputText class="form-control" @bind-Value="_model.Niveau" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Responsable (ID)</label>
+        <InputText class="form-control" @bind-Value="_responsableIdText" />
+    </div>
+
+    <button class="btn btn-success" type="submit">💾 Enregistrer</button>
+    <button class="btn btn-secondary ms-2" type="button" @onclick="Annuler">↩️ Annuler</button>
+</EditForm>
+
+@code {
+    private FiliereDto _model = new();
+    private string _responsableIdText = string.Empty;
+
+    private async Task OnSubmitAsync()
+    {
+        if (Guid.TryParse(_responsableIdText, out var responsableId))
+        {
+            _model.ResponsableId = responsableId;
+        }
+        else
+        {
+            _model.ResponsableId = null;
+        }
+
+        var ok = await FilieresService.CreateAsync(_model);
+        if (ok)
+        {
+            await JS.InvokeVoidAsync("alert", "✅ Filière ajoutée avec succès !");
+            Nav.NavigateTo("/filieres");
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "❌ Échec de l'ajout.");
+        }
+    }
+
+    private void Annuler() => Nav.NavigateTo("/filieres");
+}

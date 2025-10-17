@@ -1,0 +1,204 @@
+@* @page "/filieres"
+@using WorkTrack.Client.Models
+@using WorkTrack.Client.Services
+@using WorkTrack.Client.Services.Interfaces
+@inject IFilieresService FilieresService
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+
+
+
+<h3 class="mb-4">📚 Liste des Filières</h3>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <button class="btn btn-primary" @onclick="Ajouter">➕ Ajouter une filière</button>
+
+    <input type="text" class="form-control w-25" placeholder="🔍 Rechercher..."
+           @bind="searchTerm" @bind:event="oninput" />
+</div>
+
+@if (_loading)
+{
+    <p>Chargement des données...</p>
+}
+else if (!_filieres.Any(f => MatchSearch(f)))
+{
+    <p>Aucune filière trouvée.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Niveau</th>
+                <th>Responsable</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var f in _filieres.Where(MatchSearch))
+            {
+                <tr>
+                    <td>@f.Nom</td>
+                    <td>@f.Niveau</td>
+                    <td>@(f.ResponsableId?.ToString() ?? "—")</td>
+                    <td>
+                        <a class="btn btn-sm btn-info me-2" href="/filieres/@f.Id">👁️Détails</a>
+                        <a class="btn btn-sm btn-warning me-2" href="/filieres/edit/@f.Id">✏️Modifier</a>
+                        <button class="btn btn-sm btn-danger" @onclick="() => ConfirmerSuppression(f.Id)">🗑️Supprimer</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<FiliereDto> _filieres = new();
+    private string searchTerm = string.Empty;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _filieres = await FilieresService.GetAllAsync();
+        _loading = false;
+    }
+
+    private void Ajouter() => Nav.NavigateTo("/filieres/add");
+
+    private bool MatchSearch(FiliereDto f)
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm)) return true;
+
+        return f.Nom.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+            || (f.Niveau?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false);
+    }
+
+    private async Task ConfirmerSuppression(Guid id)
+    {
+        bool confirm = await JS.InvokeAsync<bool>("confirm", "❗ Voulez-vous vraiment supprimer cette filière ?");
+        if (confirm)
+        {
+            var ok = await FilieresService.DeleteAsync(id);
+            if (ok)
+            {
+                _filieres = await FilieresService.GetAllAsync();
+                await JS.InvokeVoidAsync("alert", "✅ Filière supprimée.");
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("alert", "❌ Échec de la suppression.");
+            }
+        }
+    }
+} *@
+
+
+
+@page "/filieres"
+@inject IFilieresService FilieresService
+@inject IEnseignantsService EnseignantsService
+@using WorkTrack.Client.Services.Interfaces
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<h3 class="mb-4">📚 Liste des Filières</h3>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <button class="btn btn-primary" @onclick="Ajouter">➕ Ajouter une filière</button>
+    <input type="text" class="form-control w-25" placeholder="🔍 Rechercher..."
+           @bind="searchTerm" @bind:event="oninput" />
+</div>
+
+@if (_loading)
+{
+    <p>Chargement des données...</p>
+}
+else if (!_filieres.Any(f => MatchSearch(f)))
+{
+    <p>Aucune filière trouvée.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Niveau</th>
+                <th>Responsable</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var f in _filieres.Where(MatchSearch))
+            {
+                var responsable = _responsables.FirstOrDefault(r => r.Id == f.ResponsableId);
+                var nomResponsable = responsable is null ? "—" : $"{responsable.Prenom} {responsable.Nom}";
+
+                <tr>
+                    <td>@f.Nom</td>
+                    <td>@f.Niveau</td>
+                    <td>@nomResponsable</td>
+                    <td>
+                        <a class="btn btn-sm btn-info me-2" href="/filieres/@f.Id">👁️Détails</a>
+                        <a class="btn btn-sm btn-warning me-2" href="/filieres/edit/@f.Id">✏️Modifier</a>
+                        <button class="btn btn-sm btn-danger" @onclick="() => ConfirmerSuppression(f.Id)">🗑️Supprimer</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<FiliereDto> _filieres = new();
+    private List<EnseignantDto> _responsables = new();
+    private string searchTerm = string.Empty;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var filieresTask = FilieresService.GetAllAsync();
+        var responsablesTask = EnseignantsService.GetAllAsync();
+
+        await Task.WhenAll(filieresTask, responsablesTask);
+
+        _filieres = filieresTask.Result;
+        _responsables = responsablesTask.Result;
+        _loading = false;
+    }
+
+    private void Ajouter() => Nav.NavigateTo("/filieres/add");
+
+    private bool MatchSearch(FiliereDto f)
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm)) return true;
+
+        var responsable = _responsables.FirstOrDefault(r => r.Id == f.ResponsableId);
+        var nomResponsable = responsable is null ? "" : $"{responsable.Prenom} {responsable.Nom}";
+
+        return f.Nom.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+            || (f.Niveau?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false)
+            || nomResponsable.Contains(searchTerm, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private async Task ConfirmerSuppression(Guid id)
+    {
+        bool confirm = await JS.InvokeAsync<bool>("confirm", "❗ Voulez-vous vraiment supprimer cette filière ?");
+        if (confirm)
+        {
+            var ok = await FilieresService.DeleteAsync(id);
+            if (ok)
+            {
+                _filieres = await FilieresService.GetAllAsync();
+                await JS.InvokeVoidAsync("alert", "✅ Filière supprimée.");
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("alert", "❌ Échec de la suppression.");
+            }
+        }
+    }
+}

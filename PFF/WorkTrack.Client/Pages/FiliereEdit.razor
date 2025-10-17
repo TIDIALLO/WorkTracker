@@ -1,0 +1,76 @@
+@page "/filieres/edit/{Id:guid}"
+@inject IFilieresService FilieresService
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+@using WorkTrack.Client.Services.Interfaces;
+
+
+<h3>✏️ Modifier la Filière</h3>
+
+@if (_model is null)
+{
+    <p>Chargement...</p>
+}
+else
+{
+    <EditForm Model="_model" OnValidSubmit="OnSubmitAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label class="form-label">Nom</label>
+            <InputText class="form-control" @bind-Value="_model.Nom" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Niveau</label>
+            <InputText class="form-control" @bind-Value="_model.Niveau" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Responsable (ID)</label>
+            <InputText class="form-control" @bind-Value="_responsableIdText" />
+        </div>
+
+        <button class="btn btn-success" type="submit">💾 Mettre à jour</button>
+        <button class="btn btn-secondary ms-2" type="button" @onclick="Annuler">↩️ Annuler</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private FiliereDto? _model;
+    private string _responsableIdText = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _model = await FilieresService.GetByIdAsync(Id);
+        _responsableIdText = _model?.ResponsableId?.ToString() ?? string.Empty;
+    }
+
+    private async Task OnSubmitAsync()
+    {
+        if (Guid.TryParse(_responsableIdText, out var responsableId))
+        {
+            _model!.ResponsableId = responsableId;
+        }
+        else
+        {
+            _model!.ResponsableId = null;
+        }
+
+        var ok = await FilieresService.UpdateAsync(Id, _model);
+        if (ok)
+        {
+            await JS.InvokeVoidAsync("alert", "✅ Mise à jour réussie !");
+            Nav.NavigateTo("/filieres");
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "❌ Échec de la mise à jour.");
+        }
+    }
+
+    private void Annuler() => Nav.NavigateTo("/filieres");
+}

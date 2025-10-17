@@ -1,0 +1,192 @@
+@page "/enseignants"
+@using WorkTrack.Client.Models
+@using WorkTrack.Client.Services
+@inject IEnseignantsService EnseignantsService
+@inject HttpClient Http
+ @inject IJSRuntime JS
+@inject NavigationManager Nav
+
+
+<h3 class="text-center mb-4">Liste des Enseignants</h3>
+
+
+<div class=" justify-content-end mb-3">
+    <button class="btn btn-primary" @onclick="NavigateToAdd">➕ Ajouter un enseignant</button>
+</div>
+
+@if (_loading)
+{
+    <p>Chargement...</p>
+}
+else if (_enseignants == null || !_enseignants.Any())
+{
+    <p>Aucun enseignant trouvé.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Prénom</th>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Spécialité</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var e in _enseignants)
+            {
+                <tr @onclick="() => DetailsEnseignant(e.Id)" style="cursor:pointer">           
+
+                    <td>@(string.IsNullOrWhiteSpace(e.Prenom) ? "-" : e.Prenom)</td>
+                    <td>@(string.IsNullOrWhiteSpace(e.Nom) ? "-" : e.Nom)</td>
+                    <td>@(string.IsNullOrWhiteSpace(e.Email) ? "-" : e.Email)</td>
+                    <td>@(string.IsNullOrWhiteSpace(e.Specialite) ? "-" : e.Specialite)</td>
+                    <td>
+    <button class="btn btn-info btn-sm"
+            @onclick:stopPropagation="true"
+            @onclick="() => DetailsEnseignant(e.Id)">👁️Détails</button>
+
+    <button class="btn btn-warning btn-sm ms-2"
+            @onclick:stopPropagation="true"
+            @onclick="() => ModifierAsync(e.Id)">✏️Modifier</button>
+
+    <button class="btn btn-danger btn-sm ms-2"
+            @onclick:stopPropagation="true"
+            @onclick="() => SupprimerAsync(e.Id)">🗑️Supprimer</button>
+</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    // listes et états
+    private List<EnseignantDto> _enseignants = new();
+    private List<UtilisateurDto> _utilisateurs = new();
+    private bool _loading = true;
+    private Guid _editionId = Guid.Empty; // Guid.Empty => ajout
+
+    // modèle bindé au formulaire (UtilisateurId nullable pour bouton vide)
+    private EnseignantCreateOrUpdateDto _formModel = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ChargerEtMapperAsync();
+
+        await Http.GetFromJsonAsync<List<EnseignantDto>>("api/enseignants");
+
+    }
+
+
+
+    private async Task ChargerEtMapperAsync()
+    {
+        _loading = true;
+        try
+        {
+            // récupères enseignants (backend doit renvoyer UtilisateurId)
+            var enseignantsRaw = await EnseignantsService.GetAllAsync();
+
+            // récupères utilisateurs
+            _utilisateurs = await Http.GetFromJsonAsync<List<UtilisateurDto>>("api/utilisateurs") ?? new();
+
+            // mappe prénom/nom/email dans les objets enseignants
+            _enseignants = enseignantsRaw.Select(e =>
+            {
+                // si e.UtilisateurId est présent, retrouve l'utilisateur correspondant
+                var u = _utilisateurs.FirstOrDefault(x => x.Id == e.UtilisateurId);
+                if (u != null)
+                {
+                    e.Prenom = u.Prenom;
+                    e.Nom = u.Nom;
+                    e.Email = u.Email;
+                }
+                else
+                {
+                    // garde ce qui existe déjà sinon remplit par chaîne vide
+                    e.Prenom = e.Prenom ?? string.Empty;
+                    e.Nom = e.Nom ?? string.Empty;
+                    e.Email = e.Email ?? string.Empty;
+                }
+                return e;
+            }).ToList();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+            await JS.InvokeVoidAsync("alert", "Erreur au chargement des enseignants (voir console).");
+            _enseignants = new();
+            _utilisateurs = new();
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+
+    private void NavigateToAdd()
+    {
+        Nav.NavigateTo("/enseignants/add");
+    }
+
+    private void NavigateToEdit(Guid id)
+    {
+        Nav.NavigateTo("/enseignants/{id}/edit");
+    }
+
+
+    private Task ModifierAsync(Guid id)
+
+    {
+        Nav.NavigateTo($"/enseignants/{id}/edit");
+        return Task.CompletedTask;
+    }
+
+
+    private async Task EnregistrerAsync()
+    {
+        bool ok;
+        if (_editionId == Guid.Empty)
+            ok = await EnseignantsService.CreateAsync(_formModel);
+        else
+            ok = await EnseignantsService.UpdateAsync(_editionId, _formModel);
+
+        if (ok)
+        {
+            await ChargerEtMapperAsync();
+            //_afficherFormulaire = false;
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Erreur serveur lors de l'enregistrement.");
+        }
+    }
+
+    private async Task SupprimerAsync(Guid id)
+    {
+        var confirm = await JS.InvokeAsync<bool>("confirm", "Supprimer cet enseignant ?");
+        if (!confirm) return;
+
+        var ok = await EnseignantsService.DeleteAsync(id);
+        if (ok) await ChargerEtMapperAsync();
+        else await JS.InvokeVoidAsync("alert", "Erreur serveur lors de la suppression.");
+    }
+
+   private void DetailsEnseignant(Guid id)
+    {
+    // utilise le paramètre 'id' passé depuis la boucle
+    Nav.NavigateTo($"/enseignants/{id}");
+    }
+}
+
+<style>
+    tr:hover {
+        background-color: #f5f5f5;
+        transition: background-color 0.2s;
+    }
+</style>  
+ 

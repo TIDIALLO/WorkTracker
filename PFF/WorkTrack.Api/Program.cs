@@ -3,15 +3,38 @@ using WorkTrack.Infrastructure;
 using WorkTrack.Domain.Entities;
 using WorkTrack.Application;
 using Microsoft.AspNetCore.Mvc;
-
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using WorkTrack.Api.Seeding; // <-- SeedData.SeedDevAsync
+using QuestPDF.Infrastructure;
+using Microsoft.OpenApi.Models;
+
+QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Swagger / endpoints
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
+//builder.Services.AddSwaggerGen();
+// Swagger (avec support Bearer)
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "WorkTrack API", Version = "v1" });
+    var scheme = new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Tape: Bearer {votre_token_JWT}"
+    };
+    c.AddSecurityDefinition("Bearer", scheme);
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement { { scheme, Array.Empty<string>() } });
+});
 // PostgreSQL (clé appsettings: "DefaultConnection"; fallback env: WORKTRACK_CS)
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
@@ -26,11 +49,41 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("wasm", p => p
-        .WithOrigins("https://localhost:5001", "http://localhost:5000")
+        .WithOrigins(
+            "http://localhost:5153", "http://localhost:7106", // tes anciens ports si tu les utilises
+            "http://localhost:5023", "http://localhost:7106", "https://localhost:7106"  // <-- mets ICI le(s) port(s) réel(s) du client
+        )
         .AllowAnyHeader()
         .AllowAnyMethod());
 });
 
+
+// ===== JWT Auth =====
+var jwtKey      = builder.Configuration["Jwt:Key"]!;
+var jwtIssuer   = builder.Configuration["Jwt:Issuer"]!;
+var jwtAudience = builder.Configuration["Jwt:Audience"]!;
+var signingKey  = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(o =>
+    {
+        o.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = signingKey,
+            ValidateIssuer = true,
+            ValidIssuer = jwtIssuer,
+            ValidateAudience = true,
+            ValidAudience = jwtAudience,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+builder.Services.AddAuthorization(opt =>
+{
+    opt.AddPolicy("EnseignantOnly",  p => p.RequireRole(nameof(RoleUtilisateur.Enseignant)));
+    opt.AddPolicy("ResponsableOnly", p => p.RequireRole(nameof(RoleUtilisateur.Responsable)));
+    opt.AddPolicy("AdminOnly",       p => p.RequireRole(nameof(RoleUtilisateur.Administrateur)));
+});
 var app = builder.Build();
 
 // Migrate + Seed (dev)
@@ -39,7 +92,21 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
     if (app.Environment.IsDevelopment())
-        await SeedData.SeedDevAsync(db); // <-- seed séparé
+    {
+        var legacy = await db.Utilisateurs
+            .Where(u => string.IsNullOrEmpty(u.MotDePasseHash) || !u.MotDePasseHash.StartsWith("$2")) // "$2" = préfixe BCrypt
+            .ToListAsync();
+
+        if (legacy.Count > 0)
+        {
+            foreach (var u in legacy)
+                u.MotDePasseHash = BCrypt.Net.BCrypt.HashPassword("dev"); // on force "dev" pour tests
+
+            await db.SaveChangesAsync();
+        }
+
+        await SeedData.SeedDevAsync(db);
+    }
 }
 
 if (app.Environment.IsDevelopment())
@@ -49,6 +116,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseCors("wasm");
 
 // =====================================================
@@ -306,6 +376,12 @@ affectations.MapPost("", async (AppDbContext db, AffectationModule a, Cancellati
     db.Affectations.Add(a); await db.SaveChangesAsync(ct);
     return Results.Created($"/api/affectations/{a.Id}", a);
 });
+affectations.MapGet("/{id:guid}", async (Guid id, AppDbContext db, CancellationToken ct) =>
+{
+    var a = await db.Affectations.FindAsync(new object?[] { id }, ct);
+    return a is null ? Results.NotFound() : Results.Ok(a);
+});
+
 affectations.MapPut("/{id:guid}", async (Guid id, AppDbContext db, AffectationModule input, CancellationToken ct) =>
 {
     var a = await db.Affectations.FindAsync(new object?[] { id }, ct);
@@ -329,7 +405,8 @@ var seancesGroup = app.MapGroup("/api/seances").WithTags("Séances");
 
 seancesGroup.MapGet("/today", async (AppDbContext db, CancellationToken ct) =>
 {
-    var start = DateTimeOffset.UtcNow.Date;
+    var now = DateTimeOffset.Now;
+    var start = new DateTimeOffset(now.Year, now.Month, now.Day, 0, 0, 0, now.Offset);
     var end = start.AddDays(1);
 
     var q = from s in db.Seances
@@ -392,6 +469,83 @@ seancesGroup.MapPost("/{seanceId:guid}/attendance", async (
 
     await db.SaveChangesAsync(ct);
     return Results.Ok();
+});
+
+// LISTE COMPLETE AVEC STATUT
+seancesGroup.MapGet("/{seanceId:guid}/attendance/list", async (Guid seanceId, AppDbContext db, CancellationToken ct) =>
+{
+    var seance = await db.Seances.FindAsync(new object?[] { seanceId }, ct);
+    if (seance is null) return Results.NotFound();
+    var aff = await db.Affectations.FindAsync(new object?[] { seance.AffectationId }, ct);
+    if (aff is null) return Results.NotFound();
+
+    var rows = await (
+        from a in db.Apprenants
+        join u in db.Utilisateurs on a.UtilisateurId equals u.Id
+        where a.PromotionId == aff.PromotionId
+        join pr0 in db.Presences.Where(p => p.SeanceId == seanceId)
+            on a.Id equals pr0.ApprenantId into gj
+        from pr in gj.DefaultIfEmpty()
+        orderby u.Nom, u.Prenom
+        select new AttendanceRowDto(
+            a.Id,
+            a.Matricule,
+            u.Nom + " " + u.Prenom,
+            pr == null ? "NonSaisi" :
+                (pr.Statut == StatutPresence.Present ? "Present" :
+                 pr.Statut == StatutPresence.Absent  ? "Absent"  : "Retard"),
+            pr != null ? (int?)pr.MinutesRetard : null,
+            pr != null ? pr.Commentaire : null
+        )
+    ).ToListAsync(ct);
+
+    return Results.Ok(rows);
+});
+
+// PDF
+seancesGroup.MapGet("/{seanceId:guid}/attendance/pdf", async (Guid seanceId, AppDbContext db, CancellationToken ct) =>
+{
+    var seance = await db.Seances.FindAsync(new object?[] { seanceId }, ct);
+    if (seance is null) return Results.NotFound();
+    var aff = await db.Affectations.FindAsync(new object?[] { seance.AffectationId }, ct);
+    if (aff is null) return Results.NotFound();
+
+    var meta = await (
+        from a in db.Affectations
+        join m in db.Modules on a.ModuleId equals m.Id
+        join p in db.Promotions on a.PromotionId equals p.Id
+        where a.Id == aff.Id
+        select new { Module = m.Code + " - " + m.Nom, Promotion = p.Nom }
+    ).FirstAsync(ct);
+
+    var rows = await (
+        from ap in db.Apprenants
+        join u in db.Utilisateurs on ap.UtilisateurId equals u.Id
+        where ap.PromotionId == aff.PromotionId
+        join pr0 in db.Presences.Where(p => p.SeanceId == seanceId)
+            on ap.Id equals pr0.ApprenantId into gj
+        from pr in gj.DefaultIfEmpty()
+        orderby u.Nom, u.Prenom
+        select new AttendanceRowDto(
+            ap.Id,
+            ap.Matricule,
+            u.Nom + " " + u.Prenom,
+            pr == null ? "NonSaisi" :
+                (pr.Statut == StatutPresence.Present ? "Present" :
+                 pr.Statut == StatutPresence.Absent  ? "Absent"  : "Retard"),
+            pr != null ? (int?)pr.MinutesRetard : null,
+            pr != null ? pr.Commentaire : null
+        )
+    ).ToListAsync(ct);
+
+    var bytes = WorkTrack.Api.Pdf.AttendancePdf.Create(
+        titre: "Feuille de présence",
+        sousTitre: $"{meta.Promotion} • {meta.Module} • {seance.Debut.LocalDateTime:dd/MM/yyyy HH:mm} - {seance.Fin.LocalDateTime:HH:mm} • Salle {seance.Salle}",
+        rows: rows
+    );
+
+    var fileName = $"Presence_{meta.Promotion}_{seance.Debut:yyyyMMdd_HHmm}.pdf";
+    return Results.File(bytes, "application/pdf", fileName);
 });
 
 // Liste + filtres
@@ -547,4 +701,61 @@ reports.MapGet("/apprenant-attendance/{apprenantId:guid}", async (
     });
 });
 
+
+// POST /api/auth/login  -> retourne { token, user { ... } }
+app.MapPost("/api/auth/login", async (LoginRequest req, AppDbContext db, CancellationToken ct) =>
+{
+    // 1) chercher l'utilisateur
+    var user = await db.Utilisateurs.FirstOrDefaultAsync(u => u.Email == req.Email, ct);
+    if (user is null)
+        return Results.Unauthorized();
+
+    // 2) vérifier mot de passe (BCrypt)
+    if (!BCrypt.Net.BCrypt.Verify(req.Password, user.MotDePasseHash))
+        return Results.Unauthorized();
+
+    // 3) créer le JWT
+    var claims = new List<Claim>
+    {
+        new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+        new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new(ClaimTypes.Name, $"{user.Prenom} {user.Nom}"),
+        new(ClaimTypes.Email, user.Email),
+        new(ClaimTypes.Role, user.Role.ToString())
+    };
+
+    var creds = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+    var token = new JwtSecurityToken(
+        issuer: jwtIssuer,
+        audience: jwtAudience,
+        claims: claims,
+        expires: DateTime.UtcNow.AddHours(8),
+        signingCredentials: creds);
+
+    var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+    // 4) réponse
+    return Results.Ok(new
+    {
+        token = jwt,
+        user = new { user.Id, user.Prenom, user.Nom, user.Email, Role = user.Role.ToString() }
+    });
+});
+
+// GET /api/auth/me -> infos du porteur du token
+app.MapGet("/api/auth/me", (ClaimsPrincipal me) =>
+{
+    if (me.Identity?.IsAuthenticated != true)
+        return Results.Unauthorized();
+
+    return Results.Ok(new
+    {
+        Id = me.FindFirstValue(ClaimTypes.NameIdentifier),
+        Name = me.Identity?.Name,
+        Email = me.FindFirstValue(ClaimTypes.Email),
+        Role = me.FindFirstValue(ClaimTypes.Role)
+    });
+}).RequireAuthorization();
+
 app.Run();
+record LoginRequest(string Email, string Password);

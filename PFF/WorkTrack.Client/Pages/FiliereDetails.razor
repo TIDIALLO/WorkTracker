@@ -1,0 +1,50 @@
+@page "/filieres/{Id:guid}"
+@inject IFilieresService FilieresService
+@inject IEnseignantsService EnseignantsService
+@inject NavigationManager Nav
+@using WorkTrack.Client.Services.Interfaces;
+
+<h3>Détails de la Filière</h3>
+
+@if (_filiere is null)
+{
+    <p>Chargement...</p>
+}
+else
+{
+    <dl class="row">
+        <dt class="col-sm-3">Nom</dt>
+        <dd class="col-sm-9">@_filiere.Nom</dd>
+
+        <dt class="col-sm-3">Niveau</dt>
+        <dd class="col-sm-9">@_filiere.Niveau</dd>
+
+        <dt class="col-sm-3">Responsable</dt>
+        <dd class="col-sm-9">@_responsableNom</dd>
+    </dl>
+
+    <button class="btn btn-secondary" @onclick="Retour">⬅️ Retour</button>
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private FiliereDto? _filiere;
+    private string _responsableNom = "—";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _filiere = await FilieresService.GetByIdAsync(Id);
+
+        if (_filiere?.ResponsableId is not null)
+        {
+            var responsable = await EnseignantsService.GetByIdAsync(_filiere.ResponsableId.Value);
+            if (responsable is not null)
+            {
+                _responsableNom = $"{responsable.Prenom} {responsable.Nom}";
+            }
+        }
+    }
+
+    private void Retour() => Nav.NavigateTo("/filieres");
+}

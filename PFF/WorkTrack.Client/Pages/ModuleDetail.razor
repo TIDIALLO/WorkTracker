@@ -1,0 +1,105 @@
+@page "/modules/{Id:guid}"
+@using WorkTrack.Client.Models
+@inject IModulesService ModulesService
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+@if (_loading)
+{
+    <p class="text-center">Chargement des informations...</p>
+}
+else if (_notFound)
+{
+    <div class="alert alert-warning text-center">Module introuvable.</div>
+}
+else
+{
+    <div class="details-container">
+        <div class="details-header">
+            <h2>📘 Détails du Module</h2>
+        </div>
+        <div class="details-info">
+            <p><strong>Code :</strong> @_module.Code</p>
+            <p><strong>Nom :</strong> @_module.Nom</p>
+            <p><strong>Coefficient :</strong> @(_module.Coefficient?.ToString() ?? "-")</p>
+            <p><strong>ECTS :</strong> @(_module.Ects?.ToString() ?? "-")</p>
+        </div>
+        <button class="btn-retour" @onclick="Retour">⬅️ Retour à la liste</button>
+    </div>
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private ModuleDto _module = new();
+    private bool _loading = true;
+    private bool _notFound = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var module = await ModulesService.GetByIdAsync(Id);
+        if (module == null)
+        {
+            _notFound = true;
+            return;
+        }
+
+        _module = module;
+        _loading = false;
+    }
+
+    private void Retour() => Nav.NavigateTo("/modules");
+}
+
+<style>
+    .details-container {
+        max-width: 600px;
+        margin: 3rem auto;
+        padding: 2rem;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .details-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .details-header h2 {
+        color: #1565c0;
+    }
+
+    .details-info p {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #333;
+    }
+
+    .details-info strong {
+        color: #1565c0;
+    }
+
+    .btn-retour {
+        margin-top: 2rem;
+        display: block;
+        width: 100%;
+        background-color: #1976d2;
+        color: white;
+        border: none;
+        padding: 0.6rem;
+        border-radius: 6px;
+        text-align: center;
+        text-decoration: none;
+    }
+
+    .btn-retour:hover {
+        background-color: #1565c0;
+    }
+</style>

@@ -1,19 +1,40 @@
 E:\Adama loum\PFF\WorkTrack.Infrastructure\bin\Debug\net8.0\WorkTrack.Infrastructure.deps.json
+E:\Adama loum\PFF\WorkTrack.Infrastructure\bin\Debug\net8.0\WorkTrack.Infrastructure.runtimeconfig.json
 E:\Adama loum\PFF\WorkTrack.Infrastructure\bin\Debug\net8.0\WorkTrack.Infrastructure.dll
 E:\Adama loum\PFF\WorkTrack.Infrastructure\bin\Debug\net8.0\WorkTrack.Infrastructure.pdb
-E:\Adama loum\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
-E:\Adama loum\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.AssemblyInfoInputs.cache
-E:\Adama loum\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.AssemblyInfo.cs
-E:\Adama loum\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.csproj.CoreCompileInputs.cache
-E:\Adama loum\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.dll
-E:\Adama loum\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\refint\WorkTrack.Infrastructure.dll
-E:\Adama loum\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.pdb
-E:\Adama loum\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\ref\WorkTrack.Infrastructure.dll
 E:\Adama loum\PFF\WorkTrack.Infrastructure\bin\Debug\net8.0\WorkTrack.Application.dll
 E:\Adama loum\PFF\WorkTrack.Infrastructure\bin\Debug\net8.0\WorkTrack.Domain.dll
 E:\Adama loum\PFF\WorkTrack.Infrastructure\bin\Debug\net8.0\WorkTrack.Domain.pdb
 E:\Adama loum\PFF\WorkTrack.Infrastructure\bin\Debug\net8.0\WorkTrack.Application.pdb
 E:\Adama loum\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.csproj.AssemblyReference.cache
+E:\Adama loum\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+E:\Adama loum\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.AssemblyInfoInputs.cache
+E:\Adama loum\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.AssemblyInfo.cs
+E:\Adama loum\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.csproj.CoreCompileInputs.cache
+E:\Adama loum\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.sourcelink.json
 E:\Adama loum\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrac.8BEF9A5A.Up2Date
-E:\Adama loum\PFF\WorkTrack.Infrastructure\bin\Debug\net8.0\WorkTrack.Infrastructure.runtimeconfig.json
+E:\Adama loum\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.dll
+E:\Adama loum\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\refint\WorkTrack.Infrastructure.dll
+E:\Adama loum\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.pdb
 E:\Adama loum\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.genruntimeconfig.cache
+E:\Adama loum\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\ref\WorkTrack.Infrastructure.dll
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Infrastructure\bin\Debug\net8.0\WorkTrack.Infrastructure.deps.json
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Infrastructure\bin\Debug\net8.0\WorkTrack.Infrastructure.runtimeconfig.json
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Infrastructure\bin\Debug\net8.0\WorkTrack.Infrastructure.dll
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Infrastructure\bin\Debug\net8.0\WorkTrack.Infrastructure.pdb
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Infrastructure\bin\Debug\net8.0\WorkTrack.Application.dll
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Infrastructure\bin\Debug\net8.0\WorkTrack.Domain.dll
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Infrastructure\bin\Debug\net8.0\WorkTrack.Domain.pdb
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Infrastructure\bin\Debug\net8.0\WorkTrack.Application.pdb
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.csproj.AssemblyReference.cache
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.AssemblyInfoInputs.cache
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.AssemblyInfo.cs
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.sourcelink.json
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrac.8BEF9A5A.Up2Date
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.dll
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\refint\WorkTrack.Infrastructure.dll
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.pdb
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\WorkTrack.Infrastructure.genruntimeconfig.cache
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Infrastructure\obj\Debug\net8.0\ref\WorkTrack.Infrastructure.dll

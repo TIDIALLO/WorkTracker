@@ -1,0 +1,60 @@
+@page "/seances/{SeanceId:guid}/recap"
+@inject WorkTrack.Client.Services.ISeancesService SeancesSvc
+@inject HttpClient Http
+@using WorkTrack.Client.Models
+
+<h3>Récapitulatif des présences</h3>
+
+@if (_loading)
+{
+    <p>Chargement…</p>
+}
+else
+{
+    <a class="btn btn-outline-primary mb-3" href="@PdfUrl" target="_blank" rel="noopener">
+        Imprimer en PDF
+    </a>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Matricule</th>
+                <th>Nom</th>
+                <th>Statut</th>
+                <th>Min. retard</th>
+                <th>Commentaire</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var r in _rows)
+        {
+            <tr>
+                <td>@r.Matricule</td>
+                <td>@r.NomComplet</td>
+                <td>@r.Statut</td>
+                <td>@(r.MinutesRetard?.ToString() ?? "-")</td>
+                <td>@r.Commentaire</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter] public Guid SeanceId { get; set; }
+
+    private bool _loading = true;
+    private List<AttendanceRowDto> _rows = new();
+    private string? PdfUrl;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _rows = await SeancesSvc.GetAttendanceListAsync(SeanceId);
+
+        // Construit une URL ABSOLUE vers l’API à partir de HttpClient.BaseAddress
+        var baseUri = Http.BaseAddress ?? new Uri("https://localhost:5001");
+        PdfUrl = new Uri(baseUri, $"api/seances/{SeanceId}/attendance/pdf").ToString();
+
+        _loading = false;
+    }
+}

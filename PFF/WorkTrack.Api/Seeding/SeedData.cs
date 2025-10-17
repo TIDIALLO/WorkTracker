@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WorkTrack.Infrastructure;
 using WorkTrack.Domain.Entities;
+using BCrypt.Net;
 
 namespace WorkTrack.Api.Seeding;
 
@@ -14,11 +15,20 @@ public static class SeedData
         if (await db.Modules.AnyAsync()) return;
 
         // Utilisateurs
-        var uProf = new Utilisateur { Id = Guid.NewGuid(), Prenom = "Aïda", Nom = "Fall", Email = "aida.fall@ecole.test", MotDePasseHash = "dev", Role = RoleUtilisateur.Enseignant };
-        var uResp = new Utilisateur { Id = Guid.NewGuid(), Prenom = "Moussa", Nom = "Diop", Email = "moussa.diop@ecole.test", MotDePasseHash = "dev", Role = RoleUtilisateur.Responsable };
-        var uSt1  = new Utilisateur { Id = Guid.NewGuid(), Prenom = "Fatou", Nom = "Ndiaye", Email = "fatou.ndiaye@etu.test", MotDePasseHash = "dev", Role = RoleUtilisateur.Apprenant };
-        var uSt2  = new Utilisateur { Id = Guid.NewGuid(), Prenom = "Ibrahima", Nom = "Ba", Email = "ibrahima.ba@etu.test", MotDePasseHash = "dev", Role = RoleUtilisateur.Apprenant };
-        var uSt3  = new Utilisateur { Id = Guid.NewGuid(), Prenom = "Khadija", Nom = "Sow", Email = "khadija.sow@etu.test", MotDePasseHash = "dev", Role = RoleUtilisateur.Apprenant };
+        //var uProf = new Utilisateur { Id = Guid.NewGuid(), Prenom = "Aïda", Nom = "Fall", Email = "aida.fall@ecole.test", MotDePasseHash = "dev", Role = RoleUtilisateur.Enseignant };
+        var pwd = BCrypt.Net.BCrypt.HashPassword("dev");
+        var uProf = new Utilisateur {
+            Id = Guid.NewGuid(),
+            Prenom = "Tidiane",
+            Nom = "Diallo",
+            Email = "t.diallo@isepat.edu.sn",
+            Role = RoleUtilisateur.Enseignant,
+            MotDePasseHash = pwd  // <— mot de passe = dev
+        };
+        var uResp = new Utilisateur { Id = Guid.NewGuid(), Prenom = "Moussa", Nom = "Diop", Email = "moussa.diop@isepat.edu.sn", MotDePasseHash = pwd, Role = RoleUtilisateur.Responsable };
+        var uSt1  = new Utilisateur { Id = Guid.NewGuid(), Prenom = "Fatou", Nom = "Ndiaye", Email = "fatou.ndiaye@isepat.edu.sn", MotDePasseHash = pwd, Role = RoleUtilisateur.Apprenant };
+        var uSt2  = new Utilisateur { Id = Guid.NewGuid(), Prenom = "Ibrahima", Nom = "Ba", Email = "ibrahima.ba@isepat.edu.sn", MotDePasseHash = pwd, Role = RoleUtilisateur.Apprenant };
+        var uSt3  = new Utilisateur { Id = Guid.NewGuid(), Prenom = "Khadija", Nom = "Sow", Email = "khadija.sow@isepat.edu.sn", MotDePasseHash = pwd, Role = RoleUtilisateur.Apprenant };
         db.Utilisateurs.AddRange(uProf, uResp, uSt1, uSt2, uSt3);
 
         // Rôles annexes
@@ -84,7 +94,7 @@ public static class SeedData
                 });
             }
         }
-
+        
         await db.SaveChangesAsync();
     }
 }

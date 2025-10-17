@@ -1,0 +1,127 @@
+@page "/affectations/{Id:guid}/edit"
+@inject IAffectationsService AffectationsService
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+@inject HttpClient Http
+
+<h3 class="text-center mb-4">✏️ Modifier Affectation</h3>
+
+@if (_loading)
+{
+    <p>Chargement...</p>
+}
+else if (_notFound)
+{
+    <div class="alert alert-warning">Affectation introuvable.</div>
+}
+else
+{
+    <EditForm Model="_model" OnValidSubmit="OnSubmitAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <!-- mêmes champs que dans Add -->
+
+        <div class="mb-3">
+            <label>Module</label>
+            <select class="form-select" @bind="_model.ModuleId">
+                @foreach (var m in _modules)
+                {
+                    <option value="@m.Id">@m.Nom</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label>Promotion</label>
+            <select class="form-select" @bind="_model.PromotionId">
+                @foreach (var p in _promotions)
+                {
+                    <option value="@p.Id">@p.Nom (@p.AnneeScolaire)</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label>Enseignant</label>
+            <select class="form-select" @bind="_model.EnseignantId">
+                @foreach (var e in _enseignants)
+                {
+                    <option value="@e.Id">@e.Prenom @e.Nom</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label>Semestre</label>
+            <select class="form-select" @bind="_model.SemestreId">
+                @foreach (var s in _semestres)
+                {
+                    <option value="@s.Id">@s.Libelle</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label>Volume horaire prévu</label>
+            <InputNumber @bind-Value="_model.VolumeHorairePrevu" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label>Date début</label>
+            <InputDate @bind-Value="_model.DateDebut" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label>Date fin</label>
+            <InputDate @bind-Value="_model.DateFin" class="form-control" />
+        </div>
+
+        <button class="btn btn-primary" type="submit">Mettre à jour</button>
+        <button class="btn btn-secondary ms-2" type="button" @onclick="Annuler">Annuler</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private AffectationModuleDto _model = new();
+    private List<ModuleDto> _modules = new();
+    private List<PromotionDto> _promotions = new();
+    private List<EnseignantDto> _enseignants = new();
+    private List<SemestreDto> _semestres = new();
+    private bool _loading = true;
+    private bool _notFound = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _model = await AffectationsService.GetByIdAsync(Id) ?? new();
+        if (_model.Id == Guid.Empty)
+        {
+            _notFound = true;
+            return;
+        }
+
+        _modules = await Http.GetFromJsonAsync<List<ModuleDto>>("api/modules") ?? new();
+        _promotions = await Http.GetFromJsonAsync<List<PromotionDto>>("api/promotions") ?? new();
+        _enseignants = await Http.GetFromJsonAsync<List<EnseignantDto>>("api/enseignants") ?? new();
+        _semestres = await Http.GetFromJsonAsync<List<SemestreDto>>("api/semestres") ?? new();
+        _loading = false;
+    }
+
+    private async Task OnSubmitAsync()
+    {
+        var ok = await AffectationsService.UpdateAsync(Id, _model);
+        if (ok)
+        {
+            await JS.InvokeVoidAsync("alert", "✅ Affectation mise à jour !");
+            Nav.NavigateTo("/affectations");
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Erreur lors de la mise à jour.");
+        }
+    }
+
+    private void Annuler() => Nav.NavigateTo("/affectations");
+}

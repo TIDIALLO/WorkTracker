@@ -1,0 +1,77 @@
+@page "/seances"
+@inject WorkTrack.Client.Services.ISeancesService SeancesSvc
+@using WorkTrack.Client.Models
+
+<h3>Séances du jour</h3>
+
+@if (_loading)
+{
+    <p>Chargement…</p>
+}
+else if (_today.Count == 0 && _upcoming.Count == 0)
+{
+    <p>Aucune séance aujourd'hui.</p>
+}
+else
+{
+    @if (_today.Count > 0)
+    {
+        <h5>Aujourd'hui</h5>
+        @SeancesTable(_today)
+    }
+
+    @if (_upcoming.Count > 0)
+    {
+        <h5 class="mt-4">À venir (7 jours)</h5>
+        @SeancesTable(_upcoming)
+    }
+}
+
+@code {
+    private bool _loading = true;
+    private List<SeanceDto> _today = new();
+    private List<SeanceDto> _upcoming = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var now = DateTimeOffset.Now;
+        var start = new DateTimeOffset(now.Year, now.Month, now.Day, 0, 0, 0, now.Offset);
+        var end = start.AddDays(1);
+
+        _today = await SeancesSvc.GetAsync(start, end);
+
+        if (_today.Count == 0)
+        {
+            var next7 = end.AddDays(7);
+            _upcoming = await SeancesSvc.GetAsync(end, next7);
+        }
+
+        _loading = false;
+    }
+
+    RenderFragment SeancesTable(List<SeanceDto> items) => @<table class="table">
+        <thead>
+            <tr>
+                <th>Début</th>
+                <th>Fin</th>
+                <th>Salle</th>
+                <th>Module</th>
+                <th>Promotion</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var s in items)
+        {
+            <tr>
+                <td>@s.Debut.LocalDateTime.ToString("dd/MM HH:mm")</td>
+                <td>@s.Fin.LocalDateTime.ToString("HH:mm")</td>
+                <td>@s.Salle</td>
+                <td>@($"{s.ModuleCode} - {s.ModuleNom}")</td>
+                <td>@s.PromotionNom</td>
+                <td><a href="@($"/seances/{s.Id}")" class="btn btn-sm btn-primary">Prise de présence</a></td>
+            </tr>
+        }
+        </tbody>
+    </table>;
+}

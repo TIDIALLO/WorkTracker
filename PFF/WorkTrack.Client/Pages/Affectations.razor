@@ -1,0 +1,154 @@
+@page "/affectations"
+@inject IAffectationsService AffectationsService
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+@inject HttpClient Http
+
+
+<h3 class="text-center mb-4">📋 Affectations de Modules</h3>
+
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <button class="btn btn-primary" @onclick="Ajouter">➕ Nouvelle affectation</button>
+
+    <input type="text" class="form-control w-25" placeholder="🔍 Rechercher..."
+           @bind="searchTerm" @bind:event="oninput" />
+</div>
+
+
+@* <div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-primary" @onclick="Ajouter">➕ Nouvelle affectation</button>
+</div> *@
+
+
+
+
+@if (_loading)
+{
+    <p>Chargement...</p>
+}
+else if (_affectations == null || !_affectations.Any())
+{
+    <div class="alert alert-info">Aucune affectation trouvée.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Module</th>
+                <th>Filiere</th>
+                <th>Promotion</th>
+                <th>Enseignant</th>
+                <th>Semestre</th>
+                <th>Volume</th>
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var a in _affectations.Where(MatchSearch))
+            {
+                <tr>
+                    <td>@GetModuleNom(a.ModuleId)</td>
+                    <td>@GetFiliereNom(a.PromotionId)</td>
+                    <td>@GetPromotionNom(a.PromotionId)</td>
+                    <td>@GetEnseignantNom(a.EnseignantId)</td>
+                    <td>@GetSemestreNom(a.SemestreId)</td>
+                    <td>@(a.VolumeHorairePrevu?.ToString() ?? "-")</td>
+                    <td class="text-center">
+                        <button class="btn btn-info btn-sm" @onclick="() => VoirDetails(a.Id)">👁️ Détails</button>
+                        <button class="btn btn-warning btn-sm" @onclick="() => Modifier(a.Id)">✏️ Modifier</button>
+                        <button class="btn btn-danger btn-sm ms-2" @onclick="() => SupprimerAsync(a.Id)">🗑️ Supprimer</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<AffectationModuleDto> _affectations = new();
+    private List<ModuleDto> _modules = new();
+    private List<PromotionDto> _promotions = new();
+    private List<EnseignantDto> _enseignants = new();
+    private List<SemestreDto> _semestres = new();
+    private List<FiliereDto> _filieres = new();
+    private bool _loading = true;
+    private string searchTerm = string.Empty;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+    await ChargerAffectations();
+    _affectations = await AffectationsService.GetAllAsync();
+    _modules = await Http.GetFromJsonAsync<List<ModuleDto>>("api/modules") ?? new();
+    _promotions = await Http.GetFromJsonAsync<List<PromotionDto>>("api/promotions") ?? new();
+    _enseignants = await Http.GetFromJsonAsync<List<EnseignantDto>>("api/enseignants") ?? new();
+    _semestres = await Http.GetFromJsonAsync<List<SemestreDto>>("api/semestres") ?? new();
+    _filieres = await Http.GetFromJsonAsync<List<FiliereDto>>("api/filieres") ?? new();
+
+    _loading = false;
+    }
+
+    private bool MatchSearch(AffectationModuleDto a)
+{
+    if (string.IsNullOrWhiteSpace(searchTerm)) return true;
+
+    var module = _modules.FirstOrDefault(m => m.Id == a.ModuleId)?.Nom ?? "";
+    var promo = _promotions.FirstOrDefault(p => p.Id == a.PromotionId)?.Nom ?? "";
+    var enseignant = _enseignants.FirstOrDefault(e => e.Id == a.EnseignantId);
+    var enseignantNom = enseignant is null ? "" : $"{enseignant.Prenom} {enseignant.Nom}";
+
+    return module.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+        || promo.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+        || enseignantNom.Contains(searchTerm, StringComparison.OrdinalIgnoreCase);
+}
+
+
+    private async Task ChargerAffectations()
+    {
+        _loading = true;
+        _affectations = await AffectationsService.GetAllAsync();
+        _loading = false;
+    }
+
+    private void VoirDetails(Guid id) => Nav.NavigateTo($"/affectations/{id}");
+    private void Ajouter() => Nav.NavigateTo("/affectations/add");
+    private void Modifier(Guid id) => Nav.NavigateTo($"/affectations/{id}/edit");
+
+    private async Task SupprimerAsync(Guid id)
+    {
+        var confirm = await JS.InvokeAsync<bool>("confirm", "Supprimer cette affectation ?");
+        if (!confirm) return;
+
+        var ok = await AffectationsService.DeleteAsync(id);
+        if (ok) await ChargerAffectations();
+        else await JS.InvokeVoidAsync("alert", "Erreur lors de la suppression.");
+    }
+
+
+    private string GetModuleNom(Guid id) =>
+    _modules.FirstOrDefault(m => m.Id == id)?.Nom ?? "-";
+
+private string GetPromotionNom(Guid id) =>
+    _promotions.FirstOrDefault(p => p.Id == id)?.Nom ?? "-";
+
+private string GetFiliereNom(Guid promotionId)
+{
+    var promo = _promotions.FirstOrDefault(p => p.Id == promotionId);
+    var filiere = _filieres.FirstOrDefault(f => f.Id == promo?.FiliereId);
+    return filiere?.Nom ?? "-";
+}
+
+private string GetEnseignantNom(Guid id)
+{
+    var e = _enseignants.FirstOrDefault(x => x.Id == id);
+    return e is null ? "-" : $"{e.Prenom} {e.Nom}";
+}
+
+private string GetSemestreNom(Guid id) =>
+    _semestres.FirstOrDefault(s => s.Id == id)?.Libelle ?? "-";
+
+}

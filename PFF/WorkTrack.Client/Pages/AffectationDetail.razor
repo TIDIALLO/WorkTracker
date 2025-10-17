@@ -1,0 +1,103 @@
+@page "/affectations/{Id:guid}"
+@inject IAffectationsService AffectationsService
+@inject HttpClient Http
+@inject NavigationManager Nav
+
+<h3 class="text-center mb-4">📘 Détails de l'Affectation</h3>
+
+@if (_loading)
+{
+    <p>Chargement...</p>
+}
+else if (_notFound)
+{
+    <div class="alert alert-warning text-center">Affectation introuvable.</div>
+}
+else
+{
+    <div class="card mx-auto p-4" style="max-width: 700px;">
+        <dl class="row">
+            <dt class="col-sm-4">Module</dt>
+            <dd class="col-sm-8">@GetModuleNom(_affectation.ModuleId)</dd>
+
+            <dt class="col-sm-4">Promotion</dt>
+            <dd class="col-sm-8">@GetPromotionNom(_affectation.PromotionId)</dd>
+
+            <dt class="col-sm-4">Filière</dt>
+            <dd class="col-sm-8">@GetFiliereNom(_affectation.PromotionId)</dd>
+
+            <dt class="col-sm-4">Enseignant</dt>
+            <dd class="col-sm-8">@GetEnseignantNom(_affectation.EnseignantId)</dd>
+
+            <dt class="col-sm-4">Semestre</dt>
+            <dd class="col-sm-8">@GetSemestreNom(_affectation.SemestreId)</dd>
+
+            <dt class="col-sm-4">Volume horaire prévu</dt>
+            <dd class="col-sm-8">@(_affectation.VolumeHorairePrevu?.ToString() ?? "-")</dd>
+
+            <dt class="col-sm-4">Date début</dt>
+            <dd class="col-sm-8">@(_affectation.DateDebut?.ToString("dd/MM/yyyy") ?? "-")</dd>
+
+            <dt class="col-sm-4">Date fin</dt>
+            <dd class="col-sm-8">@(_affectation.DateFin?.ToString("dd/MM/yyyy") ?? "-")</dd>
+        </dl>
+
+        <button class="btn btn-secondary mt-3" @onclick="Retour">← Retour</button>
+    </div>
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private AffectationModuleDto _affectation = new();
+    private bool _loading = true;
+    private bool _notFound = false;
+
+    private List<ModuleDto> _modules = new();
+    private List<PromotionDto> _promotions = new();
+    private List<FiliereDto> _filieres = new();
+    private List<EnseignantDto> _enseignants = new();
+    private List<SemestreDto> _semestres = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _affectation = await AffectationsService.GetByIdAsync(Id) ?? new();
+        if (_affectation.Id == Guid.Empty)
+        {
+            _notFound = true;
+            return;
+        }
+
+        _modules = await Http.GetFromJsonAsync<List<ModuleDto>>("api/modules") ?? new();
+        _promotions = await Http.GetFromJsonAsync<List<PromotionDto>>("api/promotions") ?? new();
+        _filieres = await Http.GetFromJsonAsync<List<FiliereDto>>("api/filieres") ?? new();
+        _enseignants = await Http.GetFromJsonAsync<List<EnseignantDto>>("api/enseignants") ?? new();
+        _semestres = await Http.GetFromJsonAsync<List<SemestreDto>>("api/semestres") ?? new();
+
+        _loading = false;
+    }
+
+    private string GetModuleNom(Guid id) =>
+        _modules.FirstOrDefault(m => m.Id == id)?.Nom ?? "-";
+
+    private string GetPromotionNom(Guid id) =>
+        _promotions.FirstOrDefault(p => p.Id == id)?.Nom ?? "-";
+
+    private string GetFiliereNom(Guid promotionId)
+    {
+        var promo = _promotions.FirstOrDefault(p => p.Id == promotionId);
+        var filiere = _filieres.FirstOrDefault(f => f.Id == promo?.FiliereId);
+        return filiere?.Nom ?? "-";
+    }
+
+    private string GetEnseignantNom(Guid id)
+    {
+        var e = _enseignants.FirstOrDefault(x => x.Id == id);
+        return e is null ? "-" : $"{e.Prenom} {e.Nom}";
+    }
+
+    private string GetSemestreNom(Guid id) =>
+        _semestres.FirstOrDefault(s => s.Id == id)?.Libelle ?? "-";
+
+    private void Retour() => Nav.NavigateTo("/affectations");
+}

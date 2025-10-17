@@ -1,32 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Adama loum\\PFF\\WorkTrack.Client\\WorkTrack.Client.csproj": {}
+    "C:\\Users\\HP\\Documents\\wtr\\WorkTracker\\PFF\\WorkTrack.Client\\WorkTrack.Client.csproj": {}
   },
   "projects": {
-    "E:\\Adama loum\\PFF\\WorkTrack.Client\\WorkTrack.Client.csproj": {
+    "C:\\Users\\HP\\Documents\\wtr\\WorkTracker\\PFF\\WorkTrack.Client\\WorkTrack.Client.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Adama loum\\PFF\\WorkTrack.Client\\WorkTrack.Client.csproj",
+        "projectUniqueName": "C:\\Users\\HP\\Documents\\wtr\\WorkTracker\\PFF\\WorkTrack.Client\\WorkTrack.Client.csproj",
         "projectName": "WorkTrack.Client",
-        "projectPath": "E:\\Adama loum\\PFF\\WorkTrack.Client\\WorkTrack.Client.csproj",
-        "packagesPath": "C:\\Users\\diall\\.nuget\\packages\\",
-        "outputPath": "E:\\Adama loum\\PFF\\WorkTrack.Client\\obj\\",
+        "projectPath": "C:\\Users\\HP\\Documents\\wtr\\WorkTracker\\PFF\\WorkTrack.Client\\WorkTrack.Client.csproj",
+        "packagesPath": "C:\\Users\\HP\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\HP\\Documents\\wtr\\WorkTracker\\PFF\\WorkTrack.Client\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\diall\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\HP\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -51,6 +44,14 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "Blazored.LocalStorage": {
+              "target": "Package",
+              "version": "[4.5.0, )"
+            },
+            "Microsoft.AspNetCore.Components.Authorization": {
+              "target": "Package",
+              "version": "[9.0.9, )"
+            },
             "Microsoft.AspNetCore.Components.WebAssembly": {
               "target": "Package",
               "version": "[9.0.6, )"
@@ -63,14 +64,18 @@
             "Microsoft.NET.ILLink.Tasks": {
               "suppressParent": "All",
               "target": "Package",
-              "version": "[9.0.6, )",
+              "version": "[9.0.10, )",
               "autoReferenced": true
             },
             "Microsoft.NET.Sdk.WebAssembly.Pack": {
               "suppressParent": "All",
               "target": "Package",
-              "version": "[9.0.6, )",
+              "version": "[9.0.10, )",
               "autoReferenced": true
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.14.0, )"
             },
             "System.Net.Http.Json": {
               "target": "Package",
@@ -91,7 +96,7 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.NETCore.App.Runtime.Mono.browser-wasm",
-              "version": "[9.0.6, 9.0.6]"
+              "version": "[9.0.10, 9.0.10]"
             }
           ],
           "frameworkReferences": {
@@ -99,7 +104,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
         }
       },
       "runtimes": {
