@@ -2229,10 +2229,10 @@ C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Client\obj\Debug\net9.0\comp
 C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Client\obj\Debug\net9.0\compressed\42s85u36nq-drv0pr9n5o.gz
 C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Client\obj\Debug\net9.0\compressed\vi2ok8kwkz-ft1frse3cx.gz
 C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Client\obj\Debug\net9.0\compressed\smhcl3yqls-8a0tl8o8om.gz
-C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Client\bin\Debug\net9.0\wwwroot\_framework\WorkTrack.Client.94qhicxape.wasm
-C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Client\bin\Debug\net9.0\wwwroot\_framework\WorkTrack.Client.oewr69dm9q.pdb
-C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Client\bin\Debug\net9.0\wwwroot\_framework\WorkTrack.Client.94qhicxape.wasm.gz
-C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Client\bin\Debug\net9.0\wwwroot\_framework\WorkTrack.Client.oewr69dm9q.pdb.gz
-C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Client\obj\Debug\net9.0\compressed\b2xy6d2odq-94qhicxape.gz
-C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Client\obj\Debug\net9.0\compressed\bh1maevled-oewr69dm9q.gz
-C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Client\obj\Debug\net9.0\compressed\66ez55e8a1-cxttuo3q9x.gz
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Client\bin\Debug\net9.0\wwwroot\_framework\WorkTrack.Client.rucoup9ax3.wasm
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Client\bin\Debug\net9.0\wwwroot\_framework\WorkTrack.Client.4vhdvly1ee.pdb
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Client\bin\Debug\net9.0\wwwroot\_framework\WorkTrack.Client.rucoup9ax3.wasm.gz
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Client\bin\Debug\net9.0\wwwroot\_framework\WorkTrack.Client.4vhdvly1ee.pdb.gz
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Client\obj\Debug\net9.0\compressed\b2xy6d2odq-rucoup9ax3.gz
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Client\obj\Debug\net9.0\compressed\bh1maevled-4vhdvly1ee.gz
+C:\Users\HP\Documents\wtr\WorkTracker\PFF\WorkTrack.Client\obj\Debug\net9.0\compressed\66ez55e8a1-6eybp72r90.gz

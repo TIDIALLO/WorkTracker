@@ -1,3 +1,170 @@
+@* @page "/enseignants"
+@using WorkTrack.Client.Models
+@using Microsoft.AspNetCore.Components.Forms
+@inject HttpClient Http
+@inject NavigationManager Nav
+@inject WorkTrack.Client.Services.IEnseignantsService EnseignantsService
+@inject IJSRuntime JS
+
+<h2>Liste des enseignants</h2>
+
+<!-- 🔁 À compléter avec ta logique d'affichage -->
+<!-- Exemple : -->
+<!-- @foreach (var enseignant in _enseignants) { ... } -->
+
+<!-- ✅ Bouton pour ouvrir la modale -->
+<button class="btn btn-primary mb-3" @onclick="ShowModal">Ajouter un enseignant</button>
+
+<!-- ✅ Modale d’ajout -->
+@if (IsModalVisible)
+{
+    <div class="overlay">
+        <div class="modal-box">
+            <h3>Ajouter un enseignant</h3>
+
+            @if (_loading)
+            {
+                <p>Chargement des utilisateurs...</p>
+            }
+            else
+            {
+                <EditForm Model="_model" OnValidSubmit="OnSubmitAsync">
+                    <div class="mb-3">
+                        <label class="form-label">Utilisateur</label>
+                        <InputSelect @bind-Value="_model.UtilisateurId" class="form-select">
+                            <option value="">-- Sélectionner un utilisateur --</option>
+                            @foreach (var u in _utilisateurs)
+                            {
+                                <option value="@u.Id">@u.Prenom @u.Nom (@u.Email)</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Spécialité</label>
+                        <input class="form-control" @bind="_model.Specialite" />
+                    </div>
+
+                    <div class="d-flex gap-2 justify-content-end">
+                        <button class="btn btn-success" type="submit" disabled="@_saving">
+                            @(_saving ? "Enregistrement..." : "Enregistrer")
+                        </button>
+                        <button type="button" class="btn btn-secondary" @onclick="CloseModal">Annuler</button>
+                    </div>
+                </EditForm>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private bool IsModalVisible = false;
+    private bool _loading = false;
+    private bool _saving = false;
+
+    private List<UtilisateurDto> _utilisateurs = new();
+    private EnseignantCreateOrUpdateDto _model = new();
+
+    // 🔁 À compléter si tu veux afficher la liste
+    // private List<EnseignantDto> _enseignants = new();
+
+    private async void ShowModal()
+    {
+        IsModalVisible = true;
+        _model = new();
+        _loading = true;
+
+        try
+        {
+            _utilisateurs = await Http.GetFromJsonAsync<List<UtilisateurDto>>("api/utilisateurs") ?? new();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+            await JS.InvokeVoidAsync("alert", "Impossible de charger les utilisateurs.");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void CloseModal()
+    {
+        IsModalVisible = false;
+    }
+
+    private async Task OnSubmitAsync()
+    {
+        if (!_model.UtilisateurId.HasValue || _model.UtilisateurId.Value == Guid.Empty)
+        {
+            await JS.InvokeVoidAsync("alert", "Veuillez sélectionner un utilisateur.");
+            return;
+        }
+
+        _saving = true;
+        var ok = await EnseignantsService.CreateAsync(_model);
+        _saving = false;
+
+        if (ok)
+        {
+            IsModalVisible = false;
+            await JS.InvokeVoidAsync("alert", "Enseignant ajouté avec succès !");
+            // 🔁 Tu peux recharger la liste ici si nécessaire
+            // _enseignants = await EnseignantsService.GetAllAsync();
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Erreur lors de la création.");
+        }
+    }
+}
+
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-box {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    width: 500px;
+    max-width: 100%;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+} *@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @page "/enseignants/add"
 @using WorkTrack.Client.Models
 @using Microsoft.AspNetCore.Components.Forms
@@ -159,246 +326,5 @@
         background-color: #757575;
     }
 </style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-@* @page "/enseignants/add"
-@using WorkTrack.Client.Models
-@inject HttpClient Http
-@inject NavigationManager Nav
-@inject WorkTrack.Client.Services.IEnseignantsService EnseignantsService
-@inject IJSRuntime JS
-
-<div class="overlay">
-    <div class="modal-box">
-        <h3>Ajouter un enseignant</h3>
-
-        @if (_loading)
-        {
-            <p>Chargement...</p>
-        }
-        else
-        {
-            <EditForm Model="_model" OnValidSubmit="OnSubmitAsync">
-                <div class="mb-3">
-                    <label class="form-label">Utilisateur</label>
-                    <InputSelect @bind-Value="_model.UtilisateurId" class="form-select">
-                        <option value="">-- Sélectionner un utilisateur --</option>
-                        @foreach (var u in _utilisateurs)
-                        {
-                            <option value="@u.Id">@u.Prenom @u.Nom (@u.Email)</option>
-                        }
-                    </InputSelect>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Spécialité</label>
-                    <input class="form-control" @bind="_model.Specialite" />
-                </div>
-
-                <div class="d-flex gap-2">
-                    <button class="btn btn-success" type="submit" disabled="@_saving">@(_saving ? "Enregistrement..." : "Enregistrer")</button>
-                    <button type="button" class="btn btn-secondary" @onclick="Cancel">Annuler</button>
-                </div>
-            </EditForm>
-        }
-    </div>
-</div>
-
-@code {
-    // ton code existant ici...
-    private bool _loading = true;
-    private bool _saving = false;
-
-    private List<UtilisateurDto> _utilisateurs = new();
-    private EnseignantCreateOrUpdateDto _model = new();
-
-    protected override async Task OnInitializedAsync()
-    {
-        _loading = true;
-        try
-        {
-            _utilisateurs = await Http.GetFromJsonAsync<List<UtilisateurDto>>("api/utilisateurs") ?? new();
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine(ex);
-            await JS.InvokeVoidAsync("alert", "Impossible de charger les utilisateurs.");
-        }
-        finally
-        {
-            _loading = false;
-        }
-    }
-
-    private void Cancel()
-    {
-        Nav.NavigateTo("/enseignants");
-    }
-
-    private async Task OnSubmitAsync()
-    {
-        // si UtilisateurId est nullable (Guid?), on vérifie HasValue
-        if (!_model.UtilisateurId.HasValue || _model.UtilisateurId.Value == Guid.Empty)
-        {
-            await JS.InvokeVoidAsync("alert", "Veuillez sélectionner un utilisateur.");
-            return;
-        }
-
-        _saving = true;
-        var ok = await EnseignantsService.CreateAsync(_model);
-        _saving = false;
-
-        if (ok)
-        {
-            Nav.NavigateTo("/enseignants");
-        }
-        else
-        {
-            await JS.InvokeVoidAsync("alert", "Erreur lors de la création.");
-        }
-    }
-}
-
-<style>
-.overlay {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.05); /* léger fond gris */
-}
-
-.modal-box {
-    background-color: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    width: 500px;
-    max-width: 90%;
-}
-</style> *@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@* @page "/enseignants/add"
-@using WorkTrack.Client.Models
-@using Microsoft.AspNetCore.Components.Forms
-@inject HttpClient Http
-@inject NavigationManager Nav
-@inject WorkTrack.Client.Services.IEnseignantsService EnseignantsService
-@inject IJSRuntime JS
-
-<h3>Ajouter un enseignant</h3>
-
-@if (_loading)
-{
-    <p>Chargement...</p>
-}
-else
-{
-    <EditForm Model="_model" OnValidSubmit="OnSubmitAsync">
-        <div class="card p-4">
-            <div class="mb-3">
-                <label class="form-label">Utilisateur</label>
-
-                <InputSelect @bind-Value="_model.UtilisateurId" class="form-select">
-                    <option value="">-- Sélectionner un utilisateur --</option>
-                    @foreach (var u in _utilisateurs)
-                    {
-                        <option value="@u.Id">@u.Prenom @u.Nom (@u.Email)</option>
-                    }
-                </InputSelect>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Spécialité</label>
-                <input class="form-control" @bind="_model.Specialite" />
-            </div>
-
-            <div class="d-flex gap-2">
-                <button class="btn btn-success" type="submit" disabled="@_saving">@(_saving ? "Enregistrement..." : "Enregistrer")</button>
-                <button type="button" class="btn btn-secondary" @onclick="Cancel">Annuler</button>
-            </div>
-        </div>
-    </EditForm>
-}
-
-@code {
-    private bool _loading = true;
-    private bool _saving = false;
-
-    private List<UtilisateurDto> _utilisateurs = new();
-    private EnseignantCreateOrUpdateDto _model = new();
-
-    protected override async Task OnInitializedAsync()
-    {
-        _loading = true;
-        try
-        {
-            _utilisateurs = await Http.GetFromJsonAsync<List<UtilisateurDto>>("api/utilisateurs") ?? new();
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine(ex);
-            await JS.InvokeVoidAsync("alert", "Impossible de charger les utilisateurs.");
-        }
-        finally
-        {
-            _loading = false;
-        }
-    }
-
-    private void Cancel()
-    {
-        Nav.NavigateTo("/enseignants");
-    }
-
-    private async Task OnSubmitAsync()
-    {
-        // si UtilisateurId est nullable (Guid?), on vérifie HasValue
-        if (!_model.UtilisateurId.HasValue || _model.UtilisateurId.Value == Guid.Empty)
-        {
-            await JS.InvokeVoidAsync("alert", "Veuillez sélectionner un utilisateur.");
-            return;
-        }
-
-        _saving = true;
-        var ok = await EnseignantsService.CreateAsync(_model);
-        _saving = false;
-
-        if (ok)
-        {
-            Nav.NavigateTo("/enseignants");
-        }
-        else
-        {
-            await JS.InvokeVoidAsync("alert", "Erreur lors de la création.");
-        }
-    }
-} *@
-
 
 
